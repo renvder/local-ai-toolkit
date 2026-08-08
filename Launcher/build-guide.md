@@ -88,7 +88,7 @@ Comfy_Logo_x256.ico
 Example:
 
 ```text
-ComfyUI-Launcher-Build/
+Launcher/
 ├── ComfyUI_Launcher.pyw
 ├── build.bat
 └── Comfy_Logo_x256.ico
@@ -135,7 +135,7 @@ dist\ComfyUI_Launcher.exe
 The final folder structure will look like this:
 
 ```text
-ComfyUI-Launcher-Build/
+Launcher/
 ├── ComfyUI_Launcher.pyw
 ├── build.bat
 ├── Comfy_Logo_x256.ico
