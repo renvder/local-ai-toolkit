@@ -88,7 +88,7 @@ Comfy_Logo_x256.ico
 範例：
 
 ```text
-ComfyUI-Launcher-Build/
+Launcher/
 ├── ComfyUI_Launcher.pyw
 ├── build.bat
 └── Comfy_Logo_x256.ico
@@ -135,7 +135,7 @@ dist\ComfyUI_Launcher.exe
 最終資料夾結構會類似：
 
 ```text
-ComfyUI-Launcher-Build/
+Launcher/
 ├── ComfyUI_Launcher.pyw
 ├── build.bat
 ├── Comfy_Logo_x256.ico
