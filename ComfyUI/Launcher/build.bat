@@ -1,4 +1,4 @@
-@echo off 
+@echo off
 title ComfyUI Launcher - Build EXE
 
 python --version
