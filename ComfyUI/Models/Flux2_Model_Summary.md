@@ -1,8 +1,22 @@
-# Flux2 Models Summary
+# Flux2 Models Summary (English)
+
+## Workflows
+
+1.  **[Flux2_Prompt_Reverse_to_Image.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Prompt_Reverse_to_Image.json)**
+    - Requires `qwen_3_8b_fp8mixed.safetensors` and uses an embedded `AILab_QwenVL` node to refine prompts.
+
+2.  **[Flux2_Klein_Outpaint.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Klein_Outpaint.json)**
+    - Requires all three models, plus the `layer_utility:ImageScaleByAspectRatioV2`, `color_match`, and `grow_mask_with_blur` nodes for outpainting specific functionality.
+
+3.  **[Flux2_Image_Edit.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Image_Edit.json)**
+    - Requires all three models, plus a `primitive string multiline` node for constructing prompts from multiple parameters.
+
+4.  **[Flux2_Dual_Image_Edit.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Dual_Image_Edit.json)**
+    - Requires all three models and two `layer_utility:FluxKontextImageScale` nodes to handle image scaling in the dual-editing context.
 
 ## Models Required for All Workflows
 
-The following models are required to run any of the four provided Flux2 workflows:
+To run any of the four provided Flux2 workflows, the following models are required:
 - **`flux-2-klein-9b-fp8.safetensors`**  (Unet)
 - **`qwen_3_8b_fp8mixed.safetensors`**    (CLIP)
 - **`flux2-vae.safetensors`**             (VAE)
@@ -29,4 +43,3 @@ ComfyUI/
 │   └── vae/
        └── flux2-vae.safetensors
 ```
-
