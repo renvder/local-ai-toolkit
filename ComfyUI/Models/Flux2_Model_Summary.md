@@ -36,13 +36,3 @@ All workflows rely on the three shared models above, but they have specific addi
 
 4.  **Flux2_Dual_Image_Edit.json**
     - Requires all three models and two `layer_utility:FluxKontextImageScale` nodes to handle image scaling in the dual-editing context.
-
-
-## Model Download Verification Steps (下載模型驗證步驟)
-
-To ensure successful execution of these workflows, follow these steps:
-1. **Download models** from GitHub or other trusted sources.
-2. **Place models in directory**:  Save them into `F:/Bing/Documents/GitHub/ComfyUI/models/`
-3. **Restart ComfyUI server** and ensure it can find the newly placed models (if not automatically detected, restart the server).
-
-This summary is based on analyzing the provided workflows as described.
