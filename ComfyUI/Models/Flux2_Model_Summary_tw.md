@@ -15,7 +15,7 @@
     - 需要所有三個模型和兩個 `layer_utility:FluxKontextImageScale` 節點，用於處理雙圖編輯中的圖像縮放。
 
 ## 工作流需要的模型
-要運行提供的任何四個Flux2工作流，需要以下模型:
+運行Flux2工作流，需要以下模型:
 - **`flux-2-klein-9b-fp8.safetensors`**  (Unet)
 - **`qwen_3_8b_fp8mixed.safetensors`**    (CLIP)
 - **`flux2-vae.safetensors`**             (VAE)
