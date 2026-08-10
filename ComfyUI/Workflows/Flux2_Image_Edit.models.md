@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | Diffusion model | `flux-2-klein-9b-fp8.safetensors` | [Hugging Face](https://huggingface.co/black-forest-labs/FLUX.2-klein) | `ComfyUI/models/diffusion_models` | FLUX.2 Klein 9B (FP8 Quantized) |
 | Text encoder | `qwen_3_8b_fp8mixed.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/Qwen3-8B-Text-Encoder-GGUF) | `ComfyUI/models/text_encoders` | Qwen3 8B Text Encoder (FP8 Mixed) |
-| VAE | `flux2-vae.safetensors` | [Hugging Face](https://huggingface.co/black-forest-labs/FLUX.2-klein) | `ComfyUI/models/vae` | FLUX.2 Native VAE |
+| VAE | `flux2-vae.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/vae/flux2-vae.safetensors) | `ComfyUI/models/vae` | FLUX.2 Native VAE |
 
 ---
 
