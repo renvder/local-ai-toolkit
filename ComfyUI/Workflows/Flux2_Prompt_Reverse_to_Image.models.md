@@ -17,10 +17,10 @@ ComfyUI/
 │   │   └── flux-2-klein-9b-fp8.safetensors
 │   ├── clip/
 │   │   └── qwen_3_8b_fp8mixed.safetensors
-│   ├── vae/
-│   │   └── flux2-vae.safetensors
-│   └── loras/
-│       └── Qwen-Image-Edit-F2P.safetensors
+│   └── vae/
+│       └── flux2-vae.safetensors
+│
+│
 ```
 
 ### ⚙️ Workflow Node Requirements
