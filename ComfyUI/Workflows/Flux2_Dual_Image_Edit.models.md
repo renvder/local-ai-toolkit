@@ -1,4 +1,4 @@
-# Flux2 Dual Image Edit — Model Sources 
+# Flux2 Dual Image Edit — Model Sources
 
 | Type | Filename | Model page / direct download | Target folder | Notes |
 |---|---|---|---|---|
