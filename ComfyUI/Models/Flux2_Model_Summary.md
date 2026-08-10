@@ -1,4 +1,4 @@
-# Flux2 Models Summary (English)
+# Flux2 Models Summary
 
 ## Workflows
 
