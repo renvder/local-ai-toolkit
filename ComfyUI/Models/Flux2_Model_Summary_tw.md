@@ -36,13 +36,3 @@
 
 4.  **Flux2_Dual_Image_Edit.json**
     - 需要所有三個模型和兩個 `layer_utility:FluxKontextImageScale` 節點，用於處理雙圖編輯中的圖像縮放。
-
-
-## 模型下載與驗證步驟 (下載模型驗證步驟)
-
-為確保這些工作流能成功執行，請遵循以下步驟:
-1. **下載模型**：從 GitHub 或其他可信來源下載。
-2. **放置模型至目錄**：將它們保存到 `F:/Bing/Documents/GitHub/ComfyUI/models/` 目錄中。
-3. **重新啟動 ComfyUI 服務器並確認發現新位置**（如果未自動檢測，則需要手動重啟服務器）。
-
-此摘要基於對所提供工作流的分析而得出。
