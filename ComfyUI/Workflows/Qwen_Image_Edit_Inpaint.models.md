@@ -2,7 +2,7 @@
 
 | Type | Filename | Model page / direct download | Target folder | Notes |
 |---|---|---|---|---|
-| Checkpoint | `Qwen-Rapid-AIO-NSFW-v23.safetensors` | [Hugging Face](https://huggingface.co) / [Civitai](https://civitai.com) | `ComfyUI/models/checkpoints` | Qwen Rapid AIO Base Model |
+| Checkpoint | `Qwen-Rapid-AIO-NSFW-v23.safetensors` | [Hugging Face](https://huggingface.co/Phr00t/Qwen-Image-Edit-Rapid-AIO/resolve/main/v23/Qwen-Rapid-AIO-NSFW-v23.safetensors) / [Civitai](https://civitai.com) | `ComfyUI/models/checkpoints` | Qwen Rapid AIO Base Model |
 | LoRA | `Qwen-Image-Edit-F2P.safetensors` | [Hugging Face](https://huggingface.co) / [Civitai](https://civitai.com) | `ComfyUI/models/loras` | Qwen Image Edit LoRA (Strength: 0.4) |
 
 ---
