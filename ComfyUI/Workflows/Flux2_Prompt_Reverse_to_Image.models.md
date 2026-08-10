@@ -16,7 +16,7 @@ ComfyUI/
 ├── models/
 │   ├── checkpoints/
 │   │   └── flux-2-klein-9b-fp8.safetensors
-│   ├── text_encoders/
+│   ├── clip/
 │   │   └── qwen_3_8b_fp8mixed.safetensors
 │   ├── vae/
 │   │   └── flux2-vae.safetensors
