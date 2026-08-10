@@ -1,6 +1,6 @@
 # Flux2 模型摘要
 
-## 相关工作流
+## 工作流
 
 1.  **[Flux2_Prompt_Reverse_to_Image.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Prompt_Reverse_to_Image.json)**
     - 需要 `qwen_3_8b_fp8mixed.safetensors` ，並使用嵌入式 `AILab_QwenVL` 節點來優化提示詞。
