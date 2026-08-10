@@ -2,7 +2,7 @@
 
 ## Workflows
 
-1.  **[Qwen_Image_Edit_Inpaint.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Qwen_Image_Edit_Inpaint.json)**
+-  **[Qwen_Image_Edit_Inpaint.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Qwen_Image_Edit_Inpaint.json)**
     -   Requires `Qwen-Rapid-AIO-NSFW-v23.safetensors` (Checkpoint) and `Qwen-Image-Edit-F2P.safetensors` (LoRA).
     -   Uses specialized nodes `InpaintCrop|LP` and `InpaintStitch|LP` for context-aware inpainting, along with `TextEncodeQwenImageEditPlus` for prompt processing.
     -   Includes `PrimitiveStringMultiline` nodes for constructing separate landscape and document prompts.
