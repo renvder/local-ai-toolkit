@@ -19,6 +19,7 @@
 - **`flux-2-klein-9b-fp8.safetensors`**  (Unet)
 - **`qwen_3_8b_fp8mixed.safetensors`**    (CLIP)
 - **`flux2-vae.safetensors`**             (VAE)
+
 這些模型必須在啟動任何工作流之前下載並放置在 `ComfyUI/models/` 目錄中。
 
 ## 下載連結和路徑細節
