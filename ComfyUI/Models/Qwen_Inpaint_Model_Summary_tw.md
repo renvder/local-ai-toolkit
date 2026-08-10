@@ -2,7 +2,7 @@
 
 ## 工作流
 
-1.  **[Qwen_Image_Edit_Inpaint.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Qwen_Image_Edit_Inpaint.json)**
+-  **[Qwen_Image_Edit_Inpaint.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Qwen_Image_Edit_Inpaint.json)**
     -   需要 `Qwen-Rapid-AIO-NSFW-v23.safetensors` (Checkpoint) 和 `Qwen-Image-Edit-F2P.safetensors` (LoRA)。
     -   使用 `InpaintCrop|LP` 和 `InpaintStitch|LP` 節點進行上下文感知的修復（Inpainting），並配合 `TextEncodeQwenImageEditPlus` 節點處理提示詞。
     -   包含 `PrimitiveStringMultiline` 節點，用於分別構建風景與文本文字的提示詞。
