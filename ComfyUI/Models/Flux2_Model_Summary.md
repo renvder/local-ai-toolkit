@@ -41,5 +41,5 @@ ComfyUI/
 │   ├── text_encoders/
 │   │   └── qwen_3_8b_fp8mixed.safetensors
 │   └── vae/
-       └── flux2-vae.safetensors
+        └── flux2-vae.safetensors
 ```
