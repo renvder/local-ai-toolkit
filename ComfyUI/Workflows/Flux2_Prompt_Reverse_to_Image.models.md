@@ -37,4 +37,3 @@ ComfyUI/
 * **Checkpoint**: Flux 2 Klein 9B FP8 — core diffusion model for image generation
 * **Text Encoder**: Qwen3 CLIP mixed precision — text-to-image understanding
 * **VAE**: Flux 2 VAE — latent space to image decoding
-* **LoRA**: Qwen Image Edit F2P LoRA — fine-tuned editing capabilities with strength 0.4
