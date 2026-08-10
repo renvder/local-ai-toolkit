@@ -1,4 +1,4 @@
-# ComfyUI Workflow — Model Sources
+# Flux2 Image Edit — Model Sources
 
 | Type | Filename | Model page / direct download | Target folder | Notes |
 |---|---|---|---|---|
