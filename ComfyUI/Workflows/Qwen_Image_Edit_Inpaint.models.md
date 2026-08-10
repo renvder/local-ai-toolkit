@@ -1,4 +1,4 @@
-# Qwen Image Edit Inpaint — Model Sources 
+# Qwen Image Edit Inpaint — Model Sources
 
 | Type | Filename | Model page / direct download | Target folder | Notes |
 |---|---|---|---|---|
