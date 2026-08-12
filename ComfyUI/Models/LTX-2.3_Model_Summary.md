@@ -27,11 +27,11 @@ These models must be downloaded and placed in the `ComfyUI/models/` directory be
 
 | Type | Filename | Model page / direct download | Target folder |
 |---|---|---|---|
-| Checkpoint | `ltx-2.3-22b-distilled-fp8.safetensors` | [Hugging Face / Source](https://huggingface.co/Lightricks/LTX-2.3-fp8/resolve/main/ltx-2.3-22b-distilled-fp8.safetensors) | `ComfyUI/models/checkpoints` |
-| VAE | `LTX23_video_vae_bf16.safetensors` | [Hugging Face](https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3_video_vae_bf16.safetensors) | `ComfyUI/models/vae` |
-| VAE | `LTX23_audio_vae_bf16.safetensors` | [Hugging Face](https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx_audio_vae_bf16.safetensors) | `ComfyUI/models/vae` |
-| text_encoders | `gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/ltx-2) | `ComfyUI/models/text_encoders` |
-| text_encoders | `ltx-2.3_text_projection_bf16.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/ltx-2) | `ComfyUI/models/text_encoders` |
+| Checkpoint | `ltx-2.3-22b-distilled-fp8.safetensors` | [Hugging Face](https://huggingface.co/Lightricks/LTX-2.3-fp8/resolve/main/ltx-2.3-22b-distilled-fp8.safetensors) | `ComfyUI/models/checkpoints` |
+| VAE | `LTX23_video_vae_bf16.safetensors` | [Hugging Face](https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/vae/LTX23_video_vae_bf16.safetensors) | `ComfyUI/models/vae` |
+| VAE | `LTX23_audio_vae_bf16.safetensors` | [Hugging Face](https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/vae/LTX23_audio_vae_bf16.safetensors) | `ComfyUI/models/vae` |
+| text_encoders | `gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors` | [Hugging Face](https://huggingface.co/DreamFast/gemma-3-12b-it-heretic-v2/resolve/main/comfyui/gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors) | `ComfyUI/models/text_encoders` |
+| text_encoders | `ltx-2.3_text_projection_bf16.safetensors` | [Hugging Face](https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/text_encoders/ltx-2.3_text_projection_bf16.safetensors) | `ComfyUI/models/text_encoders` |
 | latent_upscale_model | `ltx-2.3-spatial-upscaler-x2-1.1.safetensors` | [Hugging Face](https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-spatial-upscaler-x2-1.1.safetensors) | `ComfyUI/models/latent_upscale_models` |
 
 ## Directory Structure
