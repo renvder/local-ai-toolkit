@@ -18,9 +18,9 @@ These models must be downloaded and placed in the `ComfyUI/models/` directory be
 
 | Type | Filename | Model page / direct download | Target folder |
 |---|---|---|---|
-| Checkpoint | `seedvr2_ema_7b_sharp_fp16.safetensors` | [Hugging Face](https://huggingface.co/ainvfx/SeedVR2-Weights) | `ComfyUI/models/checkpoints` |
-| Checkpoint | `seedvr2_ema_3b_fp8_e4m3fn.safetensors` | [Hugging Face](https://huggingface.co/ainvfx/SeedVR2-Weights) | `ComfyUI/models/checkpoints` |
-| VAE | `ema_vae_fp16.safetensors` | [Hugging Face](https://huggingface.co/ainvfx/SeedVR2-Weights) | `ComfyUI/models/vae` |
+| Checkpoint | `seedvr2_ema_7b_sharp_fp16.safetensors` | [Hugging Face](https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_7b_sharp_fp16.safetensors) | `ComfyUI/models/checkpoints` |
+| Checkpoint | `seedvr2_ema_3b_fp8_e4m3fn.safetensors` | [Hugging Face](https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_3b_fp8_e4m3fn.safetensors) | `ComfyUI/models/checkpoints` |
+| VAE | `ema_vae_fp16.safetensors` | [Hugging Face](https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/ema_vae_fp16.safetensors) | `ComfyUI/models/vae` |
 
 ## Directory Structure
 
