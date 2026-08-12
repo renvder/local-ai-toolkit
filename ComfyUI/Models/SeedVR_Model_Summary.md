@@ -8,8 +8,8 @@
 ## Models Required for All Workflows
 
 To run the SeedVR related workflows, the following models are required:
-- **`seedvr2_ema_7b_sharp_fp16.safetensors`** (Checkpoint / 7B Model)
-- **`seedvr2_ema_3b_fp8_e4m3fn.safetensors`** (Checkpoint / 3B Model)
+- **`seedvr2_ema_7b_sharp_fp16.safetensors`** (Sharp / Enhanced-detail version)
+- **`seedvr2_ema_7b_fp16.safetensors`** (Standard / General version)
 - **`ema_vae_fp16.safetensors`** (VAE for SeedVR series)
 
 These models must be downloaded and placed in the `ComfyUI/models/` directory before launching any workflow.
@@ -19,7 +19,7 @@ These models must be downloaded and placed in the `ComfyUI/models/` directory be
 | Type | Filename | Model page / direct download | Target folder |
 |---|---|---|---|
 | Checkpoint | `seedvr2_ema_7b_sharp_fp16.safetensors` | [Hugging Face](https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_7b_sharp_fp16.safetensors) | `ComfyUI/models/checkpoints` |
-| Checkpoint | `seedvr2_ema_3b_fp8_e4m3fn.safetensors` | [Hugging Face](https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_3b_fp8_e4m3fn.safetensors) | `ComfyUI/models/checkpoints` |
+| Checkpoint | `seedvr2_ema_7b_fp16.safetensors` | [Hugging Face](https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_3b_fp8_e4m3fn.safetensors) | `ComfyUI/models/checkpoints` |
 | VAE | `ema_vae_fp16.safetensors` | [Hugging Face](https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/ema_vae_fp16.safetensors) | `ComfyUI/models/vae` |
 
 ## Directory Structure
