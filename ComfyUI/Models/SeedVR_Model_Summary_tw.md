@@ -7,8 +7,8 @@
 
 ## 工作流需要的模型
 運行 SeedVR 系列工作流時，需要以下模型：
-- **`seedvr2_ema_7b_sharp_fp16.safetensors`** (通用標準版)
-- **`seedvr2_ema_7b_fp16.safetensors`** (銳化增強版)
+- **`seedvr2_ema_7b_sharp_fp16.safetensors`** (銳化增強版)
+- **`seedvr2_ema_7b_fp16.safetensors`** (通用標準版)
 - **`ema_vae_fp16.safetensors`** (SeedVR 系列專用 VAE)
 
 這些模型必須在啟動任何工作流之前下載並放置在 `ComfyUI/models/` 目錄中。
