@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 cd /d "%~dp0"
 
-start /b "" "..\python_embeded\python.exe" -s "..\ComfyUI\main.py" --windows-standalone-build --use-sage-attention --disable-api-nodes --disable-auto-launch
+start /b "" "..\python_embeded\python.exe" -s "..\ComfyUI\main.py" --windows-standalone-build --disable-api-nodes --disable-auto-launch
 
 echo Checking Port 8188 status...
 
