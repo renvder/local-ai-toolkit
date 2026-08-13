@@ -11,7 +11,7 @@ for /f "tokens=5" %%p in ('netstat -ano ^| findstr /C:":8188" ^| findstr "LISTEN
 
 ping -n 2 127.0.0.1 >nul
 
-start /b "" ".\python_embeded\python.exe" -s "ComfyUI\main.py" --windows-standalone-build --use-sage-attention --disable-auto-launch
+start /b "" ".\python_embeded\python.exe" -s "ComfyUI\main.py" --windows-standalone-build --disable-auto-launch
 
 echo Checking Port 8188 for NVIDIA GPU Optimized session...
 
