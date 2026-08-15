@@ -1,45 +1,58 @@
-# Flux2 Models Summary
+# Flux2 Series Workflow Model Summary
 
 ## Workflows
 
-1.  **[Flux2_Prompt_Reverse_to_Image.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Prompt_Reverse_to_Image.json)**
-    - Requires `qwen_3_8b_fp8mixed.safetensors` and uses an embedded `AILab_QwenVL` node to refine prompts.
+1.  **[Flux2_Klein_4B_Outpaint.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Klein_4B_Outpaint.json)**
+    - **Functionality:** Image Outpainting/Canvas Expansion. Uses the original image and mask to naturally extend the scene content onto a larger canvas.
+    - **Unique Needs:** Specifically utilizes the 4B model and professional graphic processing nodes like `ImageScaleToTotalPixels` and `ImagePadKJ` for advanced dimensional and edge handling.
 
-2.  **[Flux2_Klein_Outpaint.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Klein_Outpaint.json)**
-    - Requires all three models, plus the `layer_utility:ImageScaleByAspectRatioV2`, `color_match`, and `grow_mask_with_blur` nodes for outpainting specific functionality.
+2.  **[Flux2_Dual_Image_Edit.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Dual_Image_Edit.json)**
+    - **Functionality:** Allows users to input two images simultaneously (Image A and Image B) and perform detailed image restoration or style transfer controlled by a text prompt.
+    - **Unique Needs:** Handling multiple image input streams (Image A and Image B) and converting them into reference latents for Flux 2 conditioning.
 
 3.  **[Flux2_Image_Edit.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Image_Edit.json)**
-    - Requires all three models, plus a `primitive string multiline` node for constructing prompts from multiple parameters.
+    - **Functionality:** Prompt Combination & Style Editing. Combines separate textual parameters (like "Perspective," "Lighting," and "Style") using multiple `PrimitiveStringMultiline` nodes to generate a single, complex, and highly descriptive composite prompt.
+    - **Unique Needs:** Focuses on advanced textual prompt construction capability.
 
-4.  **[Flux2_Dual_Image_Edit.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Dual_Image_Edit.json)**
-    - Requires all three models and two `layer_utility:FluxKontextImageScale` nodes to handle image scaling in the dual-editing context.
+4.  **[Flux2_Prompt_Reverse_to_Image.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Prompt_Reverse_to_Image.json)**
+    - **Functionality:** Prompt Reverse Engineering. Uses an input image with the `AILab_QwenVL` node to optimize and expand user prompts, generating richer prompt ideas for image generation.
+    - **Unique Needs:** Integration of a multi-modal LLM (QwenVL) node for prompt optimization.
 
 ## Models Required for All Workflows
 
-To run any of the four provided Flux2 workflows, the following models are required:
-- **`flux-2-klein-9b-fp8.safetensors`**  (Unet)
-- **`qwen_3_8b_fp8mixed.safetensors`**    (CLIP)
-- **`flux2-vae.safetensors`**             (VAE)
+This Flux2 workflow series requires multiple versions and components depending on model size and specific task (9B vs 4B).
+
+- **Diffusion Model (Unet):**
+    - `flux-2-klein-9b-fp8.safetensors` (9B Model, for complex editing, e.g., Dual-Edit)
+    - `flux-2-klein-4b.safetensors` (4B Model, for outpainting/smaller tasks)
+- **Text Encoder (CLIP):**
+    - `qwen_3_8b_fp8mixed.safetensors` (For 9B model)
+    - `qwen_3_4b.safetensors` (For 4B model, specifically Outpainting)
+- **VAE:**
+    - `flux2-vae.safetensors` (For image encoding/decoding)
 
 These models must be downloaded and placed in the `ComfyUI/models/` directory before launching any workflow.
 
 ## Download Links and Path Details
 
-| Type | Filename                | Model page / direct download                                     | Target folder                     |
-|---|---|---|---|
-| Diffusion model | `flux-2-klein-9b-fp8.safetensors` | [Civitai](https://civitai-delivery-worker-prod.5ac0637cfd0766c97916cefa3764fbdf.r2.cloudflarestorage.com/model/1761469/flux2Klein9bFp8.DCTJ.safetensors?X-Amz-Expires=86400&response-content-disposition=attachment%3B%20filename%3D%22flux2Klein9bFp8_fp8.safetensors%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=e01358d793ad6966166af8b3064953ad/20260810/us-east-1/s3/aws4_request&X-Amz-Date=20260810T034019Z&X-Amz-SignedHeaders=host&X-Amz-Signature=bb85f4055caffb6ba752df097099123b4bd869bb8e5ec0e113a83a5635034dff) | `ComfyUI/models/diffusion_models` |
-| text_encoders    | `qwen_3_8b_fp8mixed.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors)  | `ComfyUI/models/text_encoders`     |
-| VAE               | `flux2-vae.safetensors`         | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/vae/flux2-vae.safetensors)  | `ComfyUI/models/vae`           |
+| Type | Filename | Model page / direct download | Target folder |
+| :--- | :--- | :--- | :--- |
+| Diffusion model (9B) | `flux-2-klein-9b-fp8.safetensors` | [Hugging Face](https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/tree/main) | `ComfyUI/models/diffusion_models/flux2-klein-9b-fp8.safetensors` |
+| Diffusion model (4B) | `flux-2-klein-4b.safetensors` | [Hugging Face](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/resolve/main/flux-2-klein-4b.safetensors) | `ComfyUI/models/diffusion_models/flux-2-klein-4b.safetensors` |
+| Text Encoder (9B) | `qwen_3_8b_fp8mixed.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors) | `ComfyUI/models/text_encoders/qwen_3_8b_fp8mixed.safetensors` |
+| Text Encoder (4B) | `qwen_3_4b.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-4b/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors) | `ComfyUI/models/text_encoders/qwen_3_4b.safetensors` |
+| VAE | `flux2-vae.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/vae/flux2-vae.safetensors) | `ComfyUI/models/vae/flux2-vae.safetensors` |
 
 ## Directory Structure
 
 ```text
 ComfyUI/
 ├── models/
-│   ├── diffusion_models/
-│   │   └── flux-2-klein-9b-fp8.safetensors
+│   └── diffusion_models/
+│       ├── flux-2-klein-9b-fp8.safetensors
+│       └── flux-2-klein-4b.safetensors
 │   ├── text_encoders/
-│   │   └── qwen_3_8b_fp8mixed.safetensors
+│   │   ├── qwen_3_8b_fp8mixed.safetensors
+│   │   └── qwen_3_4b.safetensors
 │   └── vae/
-        └── flux2-vae.safetensors
-```
+│       └── flux2-vae.safetensors
