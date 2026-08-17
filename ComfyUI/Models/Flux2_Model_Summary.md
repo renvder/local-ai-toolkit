@@ -51,9 +51,11 @@ These models must be downloaded and placed in the `ComfyUI/models/` directory be
 ```text
 ComfyUI/
 ├── models/
-│   └── diffusion_models/
-│       ├── flux-2-klein-9b-fp8.safetensors
-│       └── flux-2-klein-4b.safetensors
+│   ├── diffusion_models/
+│   │   ├── flux-2-klein-9b-fp8.safetensors
+│   │   └── flux-2-klein-4b.safetensors
+│   ├── loras/
+│   │   └── LyNiaZ53Tudg0J6sT8Xbx_pytorch_lora_weights_comfy_converted.safetensors
 │   ├── text_encoders/
 │   │   ├── qwen_3_8b_fp8mixed.safetensors
 │   │   └── qwen_3_4b.safetensors
