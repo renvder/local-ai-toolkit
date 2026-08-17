@@ -25,6 +25,8 @@ This Flux2 workflow series requires multiple versions and components depending o
 - **Diffusion Model (Unet):**
     - `flux-2-klein-9b-fp8.safetensors` (9B Model, for complex editing, e.g., Dual-Edit)
     - `flux-2-klein-4b.safetensors` (4B Model, for outpainting/smaller tasks)
+- **LoRA:**
+    - `LyNiaZ53Tudg0J6sT8Xbx_pytorch_lora_weights_comfy_converted.safetensors` (For 4B model, specifically Outpainting)
 - **Text Encoder (CLIP):**
     - `qwen_3_8b_fp8mixed.safetensors` (For 9B model)
     - `qwen_3_4b.safetensors` (For 4B model, specifically Outpainting)
@@ -39,6 +41,7 @@ These models must be downloaded and placed in the `ComfyUI/models/` directory be
 | :--- | :--- | :--- | :--- |
 | Diffusion model (9B) | `flux-2-klein-9b-fp8.safetensors` | [Hugging Face](https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/tree/main) | `ComfyUI/models/diffusion_models/flux2-klein-9b-fp8.safetensors` |
 | Diffusion model (4B) | `flux-2-klein-4b.safetensors` | [Hugging Face](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B/resolve/main/flux-2-klein-4b.safetensors) | `ComfyUI/models/diffusion_models/flux-2-klein-4b.safetensors` |
+| LoRA | `LyNiaZ53Tudg0J6sT8Xbx_pytorch_lora_weights_comfy_converted.safetensors` | [Hugging Face](https://huggingface.co/fal/flux-2-klein-4B-outpaint-lora/resolve/main/LyNiaZ53Tudg0J6sT8Xbx_pytorch_lora_weights_comfy_converted.safetensors?download=true) | `ComfyUI/models/loras/LyNiaZ53Tudg0J6sT8Xbx_pytorch_lora_weights_comfy_converted.safetensors` |
 | Text Encoder (9B) | `qwen_3_8b_fp8mixed.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors) | `ComfyUI/models/text_encoders/qwen_3_8b_fp8mixed.safetensors` |
 | Text Encoder (4B) | `qwen_3_4b.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-4b/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors) | `ComfyUI/models/text_encoders/qwen_3_4b.safetensors` |
 | VAE | `flux2-vae.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/vae/flux2-vae.safetensors) | `ComfyUI/models/vae/flux2-vae.safetensors` |
