@@ -30,8 +30,8 @@
 
 | 類型 | 檔案名稱 | 模型頁面 / 直接下載 | 目標資料夾 |
 | :--- | :--- | :--- | :--- |
-| Unet | `minimax_h3_fl2va_pruned_int8_convrot.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/diffusion_models/minimax_h3_fl2va_pruned_int8_convrot.safetensors) | `ComfyUI/models/diffusion_models/` |
-| CLIP | `qwen3vl_32b_minimax_h3_int8_convrot.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors) | `ComfyUI/models/text_encoders/` |
+| diffusion models | `minimax_h3_fl2va_pruned_int8_convrot.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/diffusion_models/minimax_h3_fl2va_pruned_int8_convrot.safetensors) | `ComfyUI/models/diffusion_models/` |
+| text encoders | `qwen3vl_32b_minimax_h3_int8_convrot.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors) | `ComfyUI/models/text_encoders/` |
 | VAE (Video) | `minimax_h3_video_vae_fp16.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_video_vae_fp16.safetensors) | `ComfyUI/models/vae/` |
 | VAE (Audio) | `minimax_h3_audio_vae_fp32.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/minimax_h3_audio_vae_fp32.safetensors) | `ComfyUI/models/vae/` |
 | LoRA | `minimax_h3_turbo_4step_ema_ckpt500.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/minimax_h3_turbo_4step_ema_ckpt500.safetensors) | `ComfyUI/models/loras/` |
