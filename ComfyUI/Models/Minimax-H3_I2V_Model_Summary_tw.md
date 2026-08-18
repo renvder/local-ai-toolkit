@@ -14,14 +14,14 @@
 
 本工作流程需要大量的專用模型，涵蓋了 UNET 結構、多模態 CLIP 編碼器、以及專門的音訊和視頻編解碼器。
 
-- **Diffusion Model (Unet):**
+- **Diffusion Model:**
     - `minimax_h3_fl2va_pruned_int8_convrot.safetensors` (核心 UNET 模型，用於I2V生成)
-- **Text Encoder (CLIP):**
+- **Text Encoder:**
     - `qwen3vl_32b_minimax_h3_int8_convrot.safetensors` (用於處理複雜的跨模態提示詞)
-- **VAE (Video/Audio):**
+- **VAE:**
     - `minimax_h3_video_vae_fp16.safetensors` (用於視頻編碼/解碼)
     - `minimax_h3_audio_vae_fp32.safetensors` (用於音訊編碼/解碼，確保音質)
-- **LoRA (Style/Boost):**
+- **LoRA:**
     - `minimax_h3_turbo_4step_ema_ckpt500.safetensors` (用來提升生成品質和細節)
 
 這些模型必須在啟動任何工作流之前下載並放置在 `ComfyUI/models/` 目錄中。
