@@ -14,14 +14,14 @@
 
 This workflow requires specialized models covering the UNET architecture, multi-modal CLIP encoder, and dedicated audio/video encoders.
 
-- **Diffusion Model (Unet):**
+- **Diffusion Model:**
     - `minimax_h3_fl2va_pruned_int8_convrot.safetensors` (The core UNET model for I2V generation)
-- **Text Encoder (CLIP):**
+- **Text Encoder:**
     - `qwen3vl_32b_minimax_h3_int8_convrot.safetensors` (For processing complex multi-modal prompts)
-- **VAE (Video/Audio):**
+- **VAE:**
     - `minimax_h3_video_vae_fp16.safetensors` (For video encoding/decoding)
     - `minimax_h3_audio_vae_fp32.safetensors` (For audio encoding/decoding, ensuring high audio fidelity)
-- **LoRA (Style/Boost):**
+- **LoRA:**
     - `minimax_h3_turbo_4step_ema_ckpt500.safetensors` (Used to boost generation quality and detail)
 
 These models must be downloaded and placed in the `ComfyUI/models/` directory before launching any workflow.
