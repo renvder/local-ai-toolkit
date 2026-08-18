@@ -1,4 +1,4 @@
-# Video Prompt Writing Guide (T2VA / I2VA / FL2VA / L2VA)
+# Video Prompt Writing Guide (T2VA / I2VA / FL2VA / L2VA) 
 
 ## 1. Task Overview
 
