@@ -1,4 +1,4 @@
-# MiniMax H3 Multi-Modal Image to Video Workflow Summary 
+# MiniMax H3 Multi-Modal Image to Video Workflow Summary
 
 ## Workflows
 
