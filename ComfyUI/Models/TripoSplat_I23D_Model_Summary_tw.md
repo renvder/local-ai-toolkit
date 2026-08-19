@@ -29,7 +29,7 @@
 
 | 類型 | 檔案名稱 | 模型頁面 / 直接下載 | 目標資料夾 |
 | :--- | :--- | :--- | :--- |
-| UNet (Splat) | `triposplat_fp16.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/diffusion_models/` |
+| Diffusion Models | `triposplat_fp16.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/diffusion_models/` |
 | CLIP Vision | `dino_v3_vit_h.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/clip_vision/` |
 | VAE (Splat) | `triposplat_vae_decoder_fp16.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/vae/` |
 | VAE (Fallback) | `flux2-vae.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/vae/` |
