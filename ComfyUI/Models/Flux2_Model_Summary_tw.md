@@ -1,4 +1,4 @@
-# Flux2 系列工作流模型摘要
+# Flux2 系列工作流 模型摘要
 
 ## 工作流
 1. **[Flux2_Klein_4B_Outpaint.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Flux2_Klein_4B_Outpaint.json)**
