@@ -20,6 +20,7 @@ To run any of the three LTX-related workflows, the following models are required
 - **`gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors`** (Text Encoder 1)
 - **`ltx-2.3_text_projection_bf16.safetensors`** (Text Encoder 2)
 - **`ltx-2.3-spatial-upscaler-x2-1.1.safetensors`** (Latent Upscale Model - required for the Two-Stage workflow)
+- **`ltx_2.3_22b_distilled_1.1_lora_dynamic_fro09_avg_rank_111_bf16.safetensors`** (Distilled dynamic LoRA)
 
 These models must be downloaded and placed in the `ComfyUI/models/` directory before launching any workflow.
 
@@ -33,6 +34,7 @@ These models must be downloaded and placed in the `ComfyUI/models/` directory be
 | text_encoders | `gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors` | [Hugging Face](https://huggingface.co/DreamFast/gemma-3-12b-it-heretic-v2/resolve/main/comfyui/gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors) | `ComfyUI/models/text_encoders` |
 | text_encoders | `ltx-2.3_text_projection_bf16.safetensors` | [Hugging Face](https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/text_encoders/ltx-2.3_text_projection_bf16.safetensors) | `ComfyUI/models/text_encoders` |
 | latent_upscale_model | `ltx-2.3-spatial-upscaler-x2-1.1.safetensors` | [Hugging Face](https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-spatial-upscaler-x2-1.1.safetensors) | `ComfyUI/models/latent_upscale_models` |
+| LoRA | `ltx_2.3_22b_distilled_1.1_lora_dynamic_fro09_avg_rank_111_bf16.safetensors` | [Hugging Face](https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/loras/ltx-2.3-22b-distilled-1.1_lora-dynamic_fro09_avg_rank_111_bf16.safetensors) | `ComfyUI/models/text_encoders` |
 
 ## Directory Structure
 
@@ -47,5 +49,7 @@ ComfyUI/
 │   ├── text_encoders/
 │   │   ├── gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors
 │   │   └── ltx-2.3_text_projection_bf16.safetensors
-│   └── latent_upscale_models/
-│       └── ltx-2.3-spatial-upscaler-x2-1.1.safetensors
+│   ├── latent_upscale_models/
+│   │   └── ltx-2.3-spatial-upscaler-x2-1.1.safetensors
+│   └── loras/
+│       └── ltx_2.3_22b_distilled_1.1_lora_dynamic_fro09_avg_rank_111_bf16.safetensors
