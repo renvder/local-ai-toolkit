@@ -1,4 +1,4 @@
-# TripoSplat：2D 圖像到 3D 稀疏點雲重建模型摘要
+# TripoSplat：2D 圖像到 3D 模型摘要
 
 ## 工作流程
 
