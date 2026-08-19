@@ -1,4 +1,4 @@
-# LTX Model Summary
+# LTX 2.3 Model Summary
 
 ## Workflows
 
