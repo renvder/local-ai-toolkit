@@ -29,11 +29,11 @@ The components of this pipeline are highly specialized. Multiple models must be 
 
 | Type | Filename | Model page / direct download | Target folder |
 | :--- | :--- | :--- | :--- |
-| UNet (Splat) | `triposplat_fp16.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/diffusion_models/` |
-| CLIP Vision | `dino_v3_vit_h.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/clip_vision/` |
-| VAE (Splat) | `triposplat_vae_decoder_fp16.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/vae/` |
-| VAE (Fallback) | `flux2-vae.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/vae/` |
-| Background Remover | `birefnet.safetensors` | [Comfy-Org/BiRefNet](https://huggingface.co/Comfy-Org/BiRefNet) | `ComfyUI/models/background_removal/` |
+| Diffusion Models | `triposplat_fp16.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/diffusion_models/triposplat_fp16.safetensors) | `ComfyUI/models/diffusion_models/` |
+| CLIP Vision | `dino_v3_vit_h.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/clip_vision/dino_v3_vit_h.safetensors) | `ComfyUI/models/clip_vision/` |
+| VAE (Splat) | `triposplat_vae_decoder_fp16.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/vae/triposplat_vae_decoder_fp16.safetensors) | `ComfyUI/models/vae/` |
+| VAE (Fallback) | `flux2-vae.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/vae/flux2-vae.safetensors) | `ComfyUI/models/vae/` |
+| Background Remover | `birefnet.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/background_removal/birefnet.safetensors) | `ComfyUI/models/background_removal/` |
 
 ## Directory Structure
 
