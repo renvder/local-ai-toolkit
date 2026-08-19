@@ -6,9 +6,7 @@
 
 2. Download the official installation script:
 
-```text
-install-manager-for-portable-version.bat
-```
+   [install-manager-for-portable-version.bat](https://github.com/ltdrdata/ComfyUI-Manager/raw/main/scripts/install-manager-for-portable-version.bat)
 
 3. Place the script into the `ComfyUI_windows_portable` folder.
 
