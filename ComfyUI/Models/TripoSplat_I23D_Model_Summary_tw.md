@@ -1,6 +1,6 @@
 # TripoSplat：2D 圖像到 3D 模型摘要
 
-## 工作流程
+## 工作流
 
 -  **[TripoSplat_I23D.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/TripoSplat_I23D.json)**
     - **核心功能：** 將單張 2D 圖像提升為 3D 幾何結構（Gaussian Splat），實現從平面到空間的轉換。
@@ -29,11 +29,11 @@
 
 | 類型 | 檔案名稱 | 模型頁面 / 直接下載 | 目標資料夾 |
 | :--- | :--- | :--- | :--- |
-| Diffusion Models | `triposplat_fp16.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/diffusion_models/` |
-| CLIP Vision | `dino_v3_vit_h.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/clip_vision/` |
-| VAE (Splat) | `triposplat_vae_decoder_fp16.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/vae/` |
-| VAE (Fallback) | `flux2-vae.safetensors` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat) | `ComfyUI/models/vae/` |
-| Background Remover | `birefnet.safetensors` | [Comfy-Org/BiRefNet](https://huggingface.co/Comfy-Org/BiRefNet) | `ComfyUI/models/background_removal/` |
+| Diffusion Models | `triposplat_fp16.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/diffusion_models/triposplat_fp16.safetensors) | `ComfyUI/models/diffusion_models/` |
+| CLIP Vision | `dino_v3_vit_h.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/clip_vision/dino_v3_vit_h.safetensors) | `ComfyUI/models/clip_vision/` |
+| VAE (Splat) | `triposplat_vae_decoder_fp16.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/vae/triposplat_vae_decoder_fp16.safetensors) | `ComfyUI/models/vae/` |
+| VAE (Fallback) | `flux2-vae.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/vae/flux2-vae.safetensors) | `ComfyUI/models/vae/` |
+| Background Remover | `birefnet.safetensors` | [Hugging Face](https://huggingface.co/VAST-AI/TripoSplat/resolve/main/background_removal/birefnet.safetensors) | `ComfyUI/models/background_removal/` |
 
 ## 目錄結構
 
