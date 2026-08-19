@@ -10,6 +10,10 @@
 
 3.  **[LTX-2.3_I2V_Two-Stage_Upscale.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/LTX-2.3_I2V_Two-Stage_Upscale.json)**
     - Includes a two-stage process incorporating a dedicated latent upscaler to enhance resolution during the generation process.
+  
+4.  **[LTX-2.3_IA2V_Simple.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/LTX-2.3_IA2V_Simple.json)**
+    - Image-to-Video (IA2V) workflow supporting **lip-synced video generation from one image + audio**.
+    - Features image preprocessing, low-resolution generation, high-resolution generation, audio processing, and video synthesis. Includes prompt enhancement, LoRA loading, latent upscaling, and audio cropping.
 
 ## Models Required for All Workflows
 
