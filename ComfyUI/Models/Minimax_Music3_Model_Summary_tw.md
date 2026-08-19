@@ -1,4 +1,4 @@
-# MiniMax Music 3：文本到音訊生成 模型摘要
+# MiniMax Music 3：文本生成音訊 模型摘要
 
 ## 工作流
 
