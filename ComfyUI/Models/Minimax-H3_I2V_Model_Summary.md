@@ -2,7 +2,7 @@
 
 ## Workflows
 
-1.  **[Minimax-H3_I2V_First-Last.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Minimax-H3_I2V_First-Last.json)**
+-  **[Minimax-H3_I2V_First-Last.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Minimax-H3_I2V_First-Last.json)**
     - **Core Functionality:** Image-to-Video (I2V) generation. This is a highly advanced, multi-modal workflow that combines **sound, vision, and text** as a single input for generation.
     - **Key Features:**
         *   **Cross-Media Integration:** Generates video with continuous narrative and accompanying soundscapes by combining text (Prompt), a first frame image (`first_frame`), and a last frame image (`last_frame`).
