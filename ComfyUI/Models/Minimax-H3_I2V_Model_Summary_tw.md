@@ -1,6 +1,6 @@
-# MiniMax H3 跨模態圖像到視頻工作流摘要
+# MiniMax H3 跨模態圖像到視頻模型摘要
 
-## 工作流程
+## 工作流
 
 -  **[Minimax-H3_I2V_First-Last.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Minimax-H3_I2V_First-Last.json)**
     - **核心功能：** 圖像到視頻（I2V）生成。這是一個極致的跨模態工作流，它不只處理圖像，還將**聲音、視覺、文字**作為單一輸入進行結合生成。
