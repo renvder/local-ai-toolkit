@@ -11,6 +11,10 @@
 3.  **[LTX-2.3_I2V_Two-Stage_Upscale.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/LTX-2.3_I2V_Two-Stage_Upscale.json)**
     - 包含兩階段處理流程，在生成過程中加入專用的潛空間縮放器（Latent Upscaler）以提升解析度。
 
+4.  **[LTX-2.3_IA2V_Simple.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/LTX-2.3_IA2V_Simple.json)**
+    - 圖生影（Image-to-Video）流程，支援直接從一張圖像 + 音訊生成影片（包含音訊同步）。
+    - 包含多階段處理（圖像預處理、潛空間生成、低解析度生成、高解析度生成、音訊處理、視訊合成），同時支援提示詞增強、LoRA 載入、潛空間上縮放及音訊剪輯。
+
 ## 工作流需要的模型
 運行上述 LTX 系列工作流時，需要以下模型：
 - **`ltx-2.3-22b-distilled-fp8.safetensors`** (Checkpoint / 主模型)
