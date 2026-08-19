@@ -1,5 +1,4 @@
-# Qwen Image Edit Inpaint Summary
-
+# Qwen Image Edit Inpaint Model Summary
 ## Workflows
 
 -  **[Qwen_Image_Edit_Inpaint.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Qwen_Image_Edit_Inpaint.json)**
