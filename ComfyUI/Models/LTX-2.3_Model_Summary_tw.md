@@ -19,19 +19,21 @@
 - **`gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors`** (文字編碼器 1)
 - **`ltx-2.3_text_projection_bf16.safetensors`** (文字編碼器 2)
 - **`ltx-2.3-spatial-upscaler-x2-1.1.safetensors`** (潛空間縮放模型，用於「二階段」工作流)
+- **`ltx_2.3_22b_distilled_1.1_lora_dynamic_fro09_avg_rank_111_bf16.safetensors`** (蒸餾動態 LoRA)
 
 這些模型必須在啟動任何工作流之前下載並放置在 `ComfyUI/models/` 目錄中。
 
 ## 下載連結與路徑細節
 
 | 類型 | 檔案名稱 | 模型頁面 / 直接下載 | 目標資料夾 |
-|---|---|---|---|
-| Checkpoint | `ltx-2.3-22b-distilled-fp8.safetensors` | [Hugging Face](https://huggingface.co/Lightricks/LTX-2.3-fp8/resolve/main/ltx-2.3-22b-distilled-fp8.safetensors) | `ComfyUI/models/checkpoints` |
-| VAE | `LTX23_video_vae_bf16.safetensors` | [Hugging Face](https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/vae/LTX23_video_vae_bf16.safetensors) | `ComfyUI/models/vae` |
-| VAE | `LTX23_audio_vae_bf16.safetensors` | [Hugging Face](https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/vae/LTX23_audio_vae_bf16.safetensors) | `ComfyUI/models/vae` |
-| text_encoders | `gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors` | [Hugging Face](https://huggingface.co/DreamFast/gemma-3-12b-it-heretic-v2/resolve/main/comfyui/gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors) | `ComfyUI/models/text_encoders` |
-| text_encoders | `ltx-2.3_text_projection_bf16.safetensors` | [Hugging Face](https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/text_encoders/ltx-2.3_text_projection_bf16.safetensors) | `ComfyUI/models/text_encoders` |
-| latent_upscale_model | `ltx-2.3-spatial-upscaler-x2-1.1.safetensors` | [Hugging Face](https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-spatial-upscaler-x2-1.1.safetensors) | `ComfyUI/models/latent_upscale_models` |
+|------|----------|----------|------------|
+| Checkpoint | ltx-2.3-22b-distilled-fp8.safetensors | [Hugging Face](https://huggingface.co/Lightricks/LTX-2.3-fp8/resolve/main/ltx-2.3-22b-distilled-fp8.safetensors) | `ComfyUI/models/checkpoints` |
+| VAE | LTX23_video_vae_bf16.safetensors | [Hugging Face](https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/vae/LTX23_video_vae_bf16.safetensors) | `ComfyUI/models/vae` |
+| VAE | LTX23_audio_vae_bf16.safetensors | [Hugging Face](https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/vae/LTX23_audio_vae_bf16.safetensors) | `ComfyUI/models/vae` |
+| Text Encoder | gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors | [Hugging Face](https://huggingface.co/DreamFast/gemma-3-12b-it-heretic-v2/resolve/main/comfyui/gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors) | `ComfyUI/models/text_encoders` |
+| Text Encoder | ltx-2.3_text_projection_bf16.safetensors | [Hugging Face](https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/text_encoders/ltx-2.3_text_projection_bf16.safetensors) | `ComfyUI/models/text_encoders` |
+| Latent Upscaler | ltx-2.3-spatial-upscaler-x2-1.1.safetensors | [Hugging Face](https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-spatial-upscaler-x2-1.1.safetensors) | `ComfyUI/models/latent_upscale_models` |
+| LoRA | ltx_2.3_22b_distilled_1.1_lora_dynamic_fro09_avg_rank_111_bf16.safetensors | [Hugging Face](https://huggingface.co/Kijai/LTX2.3_comfy/resolve/main/loras/ltx-2.3-22b-distilled-1.1_lora-dynamic_fro09_avg_rank_111_bf16.safetensors) | `ComfyUI/models/text_encoders` |
 
 ## 目錄結構
 
@@ -46,5 +48,7 @@ ComfyUI/
 │   ├── text_encoders/
 │   │   ├── gemma-3-12b-it-heretic-v2_fp8_e4m3fn.safetensors
 │   │   └── ltx-2.3_text_projection_bf16.safetensors
-│   └── latent_upscale_models/
-│       └── ltx-2.3-spatial-upscaler-x2-1.1.safetensors
+│   ├── latent_upscale_models/
+│   │   └── ltx-2.3-spatial-upscaler-x2-1.1.safetensors
+│   └── loras/
+│       └── ltx_2.3_22b_distilled_1.1_lora_dynamic_fro09_avg_rank_111_bf16.safetensors
