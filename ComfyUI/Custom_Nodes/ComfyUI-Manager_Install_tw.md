@@ -6,9 +6,7 @@
 
 2. 下載官方安裝腳本：
 
-```text
-install-manager-for-portable-version.bat
-```
+   [install-manager-for-portable-version.bat](https://github.com/ltdrdata/ComfyUI-Manager/raw/main/scripts/install-manager-for-portable-version.bat)
 
 3. 將腳本放入 `ComfyUI_windows_portable` 資料夾。
 
