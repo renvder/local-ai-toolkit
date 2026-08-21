@@ -18,7 +18,7 @@
 This workflow relies on a series of specialized models for multimedia encoding and inference.
 
 - **Core WAN Model:**
-    - `Wan2_1-I2V-14B-480P_fp8_e4m3fn.safetensors` (Core UNET structure for image-to-video generation)
+    - `Wan2_1-I2V-14B-480P_fp8_e4m3fn.safetensors` (For image-to-video generation)
 - **Text Encoder (CLIP/T5):**
     - `umt5-xxl-enc-fp8_e4m3fn.safetensors` (For text prompt encoding)
     - `clip_vision_h.safetensors` (For visual feature extraction from images)
