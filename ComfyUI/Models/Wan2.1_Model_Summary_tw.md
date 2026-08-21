@@ -32,19 +32,16 @@
 
 | 類型 | 檔案名稱 | 模型頁面 / 直接下載 | 目標資料夾 |
 | :--- | :--- | :--- | :--- |
-| UNet | `Wan2_1-I2V-14B-480P_fp8_e4m3fn.safetensors` | [ComfyUI-WanVideoWrapper](placeholder-for-wan2-1-i2v-14b) | `ComfyUI/models/diffusion_models/` |
-| Text Encoder | `umt5-xxl-enc-fp8_e4m3fn.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/MiniMax-Music-3/resolve/main/text_encoders/minimax_music3_text_encoder_pruned_int8_convrot.safetensors) | `ComfyUI/models/text_encoders/` |
-| CLIP Vision | `clip_vision_h.safetensors` | [Placeholder](placeholder-for-clip-vision) | `ComfyUI/models/clip_vision/` |
-| Audio Encoder | `TencentGameMate/chinese-wav2vec2-base` | [Placeholder](placeholder-for-wav2vec2) | `ComfyUI/models/wav2vec_models/` |
-| VAE | `wan_2.1_vae.safetensors` | [Placeholder](placeholder-for-wan-vae) | `ComfyUI/models/vae/` |
+| Diffusion Models | `Wan2_1-I2V-14B-480P_fp8_e4m3fn.safetensors` | [Hugging Face](https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/Wan2_1-I2V-14B-480P_fp8_e4m3fn.safetensors) | `ComfyUI/models/diffusion_models/` |
+| Text Encoder | `umt5-xxl-enc-fp8_e4m3fn.safetensors` | [Hugging Face](https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/umt5-xxl-enc-fp8_e4m3fn.safetensors) | `ComfyUI/models/text_encoders/` |
+| CLIP Vision | `clip_vision_h.safetensors` | [Hugging Face](https://huggingface.co/calcuis/wan-gguf/resolve/f52f5a1f0ba441d50277fb7cdd7c1b36611837f9/clip_vision_h.safetensors) | `ComfyUI/models/clip_vision/` |
+| VAE | `wan_2.1_vae.safetensors` | [Hugging Face](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors) | `ComfyUI/models/vae/` |
 
 ## 目錄結構
 
 ```text
 ComfyUI/
 └── models/
-    ├── audio_encoders/
-    │   └── chinese-wav2vec2-base
     ├── clip_vision/
     │   └── clip_vision_h.safetensors
     ├── diffusion_models/
