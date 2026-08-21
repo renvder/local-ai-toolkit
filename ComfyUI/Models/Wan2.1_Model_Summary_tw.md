@@ -7,7 +7,6 @@
     - **模態融合：** 流程涉及四个核心模態的深度整合：
         *   **Image Embedding (圖像特徵)：** 使用 `WanVideoClipVisionEncode` 提取图像的时空信息。
         *   **Text Embedding (文本特徵)：** 使用 `WanVideoTextEncode` 编码提示词，指导视频内容。
-        *   **Audio Embedding (音訊特徵)：** 使用 `AudioSeparation` 和 `MultiTalkWav2VecEmbeds` 从原始音轨中分离并提取人声（Vocals）等关键音源。
         *   **Diffusion (核心生成)：** 利用 `WanVideoModelLoader` 和 `WanVideoSampler` 完成最终的视频生成和细节增强。
     - **高级控制：** 支持高级的视频参数控制，包括：
         *   **Image Resize：** 可以在输入前进行尺寸调整和放大（Upscale）。
@@ -23,8 +22,6 @@
 - **Text Encoder (CLIP/T5):**
     - `umt5-xxl-enc-fp8_e4m3fn.safetensors` (用于文本提示的编码)
     - `clip_vision_h.safetensors` (用于图像视觉特徵提取)
-- **Audio Model:**
-    - `TencentGameMate/chinese-wav2vec2-base` (用于音訊的波形编码器，实现音源分离)
 - **VAE:**
     - `wan_2.1_vae.safetensors` (专用的视频/音訊 VAE 編碼器)
 
