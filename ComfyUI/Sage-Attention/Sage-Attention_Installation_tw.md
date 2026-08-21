@@ -1,81 +1,102 @@
-# Sage Attention 正確安裝步驟  
-**Windows 11 + ComfyUI 便攜版**
+# SageAttention 安裝指南
 
-## 環境
+適用於 **Windows 11 + ComfyUI Portable（便攜版）**。
 
-- Python `3.13`
-- PyTorch `2.13.0+cu130`
+## 環境需求
+
+- Python：`3.13`
+- PyTorch：`2.13.0+cu130`
 
 ---
 
-## 1.（可選）使用 Visual Studio Installer 安裝建置工具
+## 1. 可選：安裝 Visual Studio C++ 建置工具
 
-> **此步驟現已非必要。** 自 `triton-windows 3.2.0.post13` 起，wheel 內已內建 TinyCC 編譯器，像 SageAttention 這類只呼叫 `triton.jit` 的套件不再需要手動安裝 MSVC 編譯工具。若你想略過本步驟，可直接跳到第 2 步。
+> 此步驟目前通常**不是必要條件**。
 >
-> 若你仍想安裝（例如日後要用到 `torch.compile` targeting CPU 等情境），可開啟 **Visual Studio Installer**，安裝 C++ 建置工具時，只勾選以下兩項：
+> 自 `triton-windows 3.2.0.post13` 起，wheel 已內建 TinyCC 編譯器。像 SageAttention 這類僅使用 `triton.jit` 的套件，通常不需要手動安裝 MSVC 編譯工具。
 >
-> - `適用於 x64/x86 的 MSVC 生成工具（最新版）`
-> - `Windows 11 SDK`
->
-> 其他選項不需要勾選。
+> 若不需要其他編譯用途，可直接跳至 [第 2 步](#2-安裝-triton)。
 
-> **提醒：** 不論是否安裝上述建置工具，都建議確認已安裝 **Visual C++ Redistributable**（`msvcp140.dll`、`vcruntime140.dll` 等），因為 `libtriton.pyd` 是由 MSVC 編譯的。若之後遇到 `ImportError: DLL load failed while importing libtriton` 之類的錯誤，通常就是這個原因，可從下方連結安裝：
+如果仍想安裝 Visual Studio C++ 建置工具，例如未來需要使用 `torch.compile` 的 CPU 編譯功能，請在 **Visual Studio Installer** 中選擇 C++ 建置工具，並只勾選：
+
+- `適用於 x64/x86 的 MSVC 生成工具（最新版）`
+- `Windows 11 SDK`
+
+其他工作負載與元件通常不需要安裝。
+
+> [!IMPORTANT]
+> 無論是否安裝上述建置工具，都建議確認系統已安裝 **Visual C++ Redistributable**。
 >
-> [Visual C++ Redistributable（直接下載）](https://aka.ms/vs/17/release/vc_redist.x64.exe)
+> `libtriton.pyd` 是以 MSVC 編譯；若缺少或版本過舊，可能出現：
+>
+> ```text
+> ImportError: DLL load failed while importing libtriton
+> ```
+>
+> 可從以下連結下載並安裝：
+>
+> [下載 Visual C++ Redistributable x64](https://aka.ms/vs/17/release/vc_redist.x64.exe)
 
 ---
 
 ## 2. 安裝 Triton
 
-在 **ComfyUI 根目錄** 開啟終端機，執行：
+在 **ComfyUI 根目錄** 開啟 PowerShell 或命令提示字元，執行：
 
 ```powershell
 .\python_embeded\python.exe -m pip install -U "triton-windows<3.8"
 ```
 
-> 鎖定版本 `<3.8` 是為了避免未來 Triton 大版本更新時與目前安裝的 PyTorch 版本不相容。
+> [!NOTE]
+> 將 Triton 限制為 `<3.8`，可避免未來 Triton 大版本更新後，與目前 PyTorch 版本發生相容性問題。
 
 ---
 
 ## 3. 安裝 Python 3.13 開發檔案
 
-> 此步驟為必須執行。
+> [!IMPORTANT]
+> 此步驟必須執行。
 
-下載：
+下載以下壓縮檔：
 
-[python_3.13.2_include_libs.zip](https://github.com/woct0rdho/triton-windows/releases/download/v3.0.0-windows.post1/python_3.13.2_include_libs.zip)
+[下載 `python_3.13.2_include_libs.zip`](https://github.com/woct0rdho/triton-windows/releases/download/v3.0.0-windows.post1/python_3.13.2_include_libs.zip)
 
-解壓縮後，將其中的 `include` 與 `libs` 兩個資料夾完整複製到：
+解壓縮後，將其中的 `include` 和 `libs` 資料夾完整複製至 ComfyUI 內嵌 Python 目錄。
+
+範例路徑：
 
 ```text
 F:\Software\ComfyUI Portable\python_embeded\
 ```
 
-完成後，資料夾結構應類似：
+完成後的目錄結構應如下：
 
 ```text
-F:\Software\ComfyUI Portable\python_embeded\
-├── include\
-└── libs\
+python_embeded/
+├── include/
+└── libs/
 ```
 
-> **注意：** 是 `libs`，不是 `lib`。`python_embeded` 資料夾內原本可能就有一個 `Lib` 資料夾（存放 `site-packages` 等），請勿與新複製進來的 `libs` 混淆或覆蓋。
+> [!CAUTION]
+> 請確認是 `libs`，不是 `lib`。
+>
+> `python_embeded` 目錄中原本可能已有 `Lib` 資料夾，用於存放 `site-packages` 等內容。請勿將新複製的 `libs` 與既有的 `Lib` 混淆，也不要覆蓋原本的 `Lib` 資料夾。
 
 ---
 
 ## 4. 安裝 SageAttention
 
-下載與目前環境相符的 wheel 檔案：
+下載與目前環境相容的 wheel 檔案：
 
 ```text
 sageattention-2.2.0+cu130torch2.10.0andhigher.post6-cp310-abi3-win_amd64.whl
 ```
 
-下載地址：
+下載連結：
 
-[SageAttention v2.2.0 Windows Post 6](https://github.com/woct0rdho/SageAttention/releases/download/v2.2.0-windows.post6/sageattention-2.2.0+cu130torch2.10.0andhigher.post6-cp310-abi3-win_amd64.whl)
+[下載 SageAttention v2.2.0 Windows Post 6](https://github.com/woct0rdho/SageAttention/releases/download/v2.2.0-windows.post6/sageattention-2.2.0+cu130torch2.10.0andhigher.post6-cp310-abi3-win_amd64.whl)
 
-將下載好的 `.whl` 檔案放入 **ComfyUI 根目錄**，然後執行：
+將下載完成的 `.whl` 檔案放到 **ComfyUI 根目錄**，再執行：
 
 ```powershell
 .\python_embeded\python.exe -m pip install .\sageattention-2.2.0+cu130torch2.10.0andhigher.post6-cp310-abi3-win_amd64.whl
@@ -83,16 +104,16 @@ sageattention-2.2.0+cu130torch2.10.0andhigher.post6-cp310-abi3-win_amd64.whl
 
 ---
 
-## 5. 啟用 Sage Attention
+## 5. 啟用 SageAttention
 
-編輯以下兩個檔案：
+編輯下列啟動腳本：
 
 ```text
 run_nvidia_gpu.bat
 advanced\run_nvidia_gpu_disable_api_nodes.bat
 ```
 
-在 ComfyUI 的啟動命令後方加上：
+在 ComfyUI 的啟動命令最後加入：
 
 ```text
 --use-sage-attention
@@ -106,11 +127,11 @@ advanced\run_nvidia_gpu_disable_api_nodes.bat
 
 ---
 
-## 6. 啟動驗證
+## 6. 驗證是否啟用成功
 
 啟動 ComfyUI 後，檢查終端機或日誌輸出。
 
-出現以下訊息即代表 Sage Attention 已成功啟用：
+若出現以下訊息，代表 SageAttention 已成功啟用：
 
 ```text
 Using sage attention
@@ -120,6 +141,35 @@ Using sage attention
 
 ## 疑難排解
 
-- **`ImportError: DLL load failed while importing libtriton`**：通常是 vcredist 版本過舊，請重新安裝 [vc_redist.x64.exe](https://aka.ms/vs/17/release/vc_redist.x64.exe)，並確認 `python_embeded` 資料夾內的 `vcruntime140.dll` 等檔案版本夠新。
-- **`ImportError: DLL load failed while importing cuda_utils`**：先刪除快取資料夾 `C:\Users\<使用者名稱>\.triton\cache\`，並再次確認 `include` 與 `libs` 是否對應到正確的 Python 版本（3.13）。
-- 若更新了 ComfyUI Portable 版本（可能連帶更新 Python / PyTorch / CUDA 版本），請回到第 2～4 步，改用對應新版本的 Triton 與 SageAttention wheel。
+### `ImportError: DLL load failed while importing libtriton`
+
+通常代表 Visual C++ Runtime 缺失或版本過舊。
+
+1. 重新安裝 [Visual C++ Redistributable x64](https://aka.ms/vs/17/release/vc_redist.x64.exe)。
+2. 確認 `python_embeded` 目錄中的 `vcruntime140.dll`、`msvcp140.dll` 等檔案未被舊版檔案覆蓋。
+3. 安裝完成後重新啟動 ComfyUI。
+
+### `ImportError: DLL load failed while importing cuda_utils`
+
+請依序檢查：
+
+1. 刪除 Triton 快取目錄：
+
+   ```text
+   C:\Users\<使用者名稱>\.triton\cache\
+   ```
+
+2. 確認 `include` 與 `libs` 已放入 `python_embeded` 目錄。
+3. 確認下載的開發檔案與目前使用的 Python 版本一致，例如 Python `3.13`。
+
+### 更新 ComfyUI Portable 後無法使用
+
+ComfyUI Portable 更新時，可能會一併更新 Python、PyTorch 或 CUDA 版本。
+
+請重新確認以下版本是否仍相容：
+
+- `triton-windows`
+- SageAttention wheel
+- Python `include` 與 `libs` 開發檔案
+
+必要時請重新執行本指南的第 2 至第 4 步。
