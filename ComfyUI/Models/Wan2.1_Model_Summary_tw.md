@@ -18,7 +18,7 @@
 本工作流依赖于一系列用于多媒体编码和推理的专业模型。
 
 - **WAN 核心模型:**
-    - `Wan2_1-I2V-14B-480P_fp8_e4m3fn.safetensors` (核心 UNET 结构，用于图像到视频的生成)
+    - `Wan2_1-I2V-14B-480P_fp8_e4m3fn.safetensors` (用于图像到视频的生成)
 - **Text Encoder (CLIP/T5):**
     - `umt5-xxl-enc-fp8_e4m3fn.safetensors` (用于文本提示的编码)
     - `clip_vision_h.safetensors` (用于图像视觉特徵提取)
