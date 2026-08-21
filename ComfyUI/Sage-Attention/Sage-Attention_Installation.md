@@ -1,71 +1,91 @@
-# Correct Sage Attention Installation Steps  
-**Windows 11 + ComfyUI Portable**
+# SageAttention Installation Guide
+
+> **Platform:** Windows 11 + ComfyUI Portable
 
 ## Environment
 
-- Python `3.13`
-- PyTorch `2.13.0+cu130`
+- Python: `3.13`
+- PyTorch: `2.13.0+cu130`
 
 ---
 
-## 1. (Optional) Install Build Tools via Visual Studio Installer
+## 1. Optional: Install Visual Studio Build Tools
 
-> **This step is no longer required.** Since `triton-windows 3.2.0.post13`, the wheel ships with a bundled TinyCC compiler, so packages that only call `triton.jit` (like SageAttention) no longer need MSVC build tools installed manually. You can skip straight to Step 2 if you like.
+> [!NOTE]
+> This step is no longer required.
 >
-> If you still want to install it (e.g. for future use with `torch.compile` targeting CPU, etc.), open **Visual Studio Installer**, and when installing C++ build tools, check only these two:
+> Since `triton-windows 3.2.0.post13`, the wheel includes a bundled TinyCC compiler. Packages that only use `triton.jit`, such as SageAttention, no longer require manually installed MSVC build tools.
 >
-> - `MSVC v143 build tools for x64/x86 (latest)`
-> - `Windows 11 SDK`
->
-> No other options are needed.
+> You may skip directly to [Step 2](#2-install-triton).
 
-> **Note:** Regardless of whether you install the build tools above, it's recommended to make sure the **Visual C++ Redistributable** is installed (`msvcp140.dll`, `vcruntime140.dll`, etc.), since `libtriton.pyd` is compiled with MSVC. If you later hit an error like `ImportError: DLL load failed while importing libtriton`, this is usually the cause. You can install it here:
+If you still want to install the build tools—for example, for future CPU-targeted `torch.compile` usage—open **Visual Studio Installer** and install the C++ build tools with only the following components selected:
+
+- `MSVC v143 build tools for x64/x86 (latest)`
+- `Windows 11 SDK`
+
+No other components are required.
+
+> [!IMPORTANT]
+> Regardless of whether you install the build tools above, make sure **Visual C++ Redistributable** is installed.
 >
-> [Visual C++ Redistributable (direct download)](https://aka.ms/vs/17/release/vc_redist.x64.exe)
+> `libtriton.pyd` is compiled with MSVC and depends on files such as `msvcp140.dll` and `vcruntime140.dll`. If you encounter the following error, an outdated or missing Visual C++ Runtime is usually the cause:
+>
+> ```text
+> ImportError: DLL load failed while importing libtriton
+> ```
+>
+> [Download Visual C++ Redistributable x64](https://aka.ms/vs/17/release/vc_redist.x64.exe)
 
 ---
 
 ## 2. Install Triton
 
-Open a terminal in the **ComfyUI root folder** and run:
+Open PowerShell or Command Prompt in the **ComfyUI root directory**, then run:
 
 ```powershell
 .\python_embeded\python.exe -m pip install -U "triton-windows<3.8"
 ```
 
-> The version cap `<3.8` prevents a future major Triton release from breaking compatibility with your currently installed PyTorch version.
+> [!NOTE]
+> The `<3.8` version limit helps prevent a future major Triton release from becoming incompatible with the currently installed PyTorch version.
 
 ---
 
 ## 3. Install Python 3.13 Development Files
 
+> [!IMPORTANT]
 > This step is required.
 
-Download:
+Download the following archive:
 
-[python_3.13.2_include_libs.zip](https://github.com/woct0rdho/triton-windows/releases/download/v3.0.0-windows.post1/python_3.13.2_include_libs.zip)
+[Download `python_3.13.2_include_libs.zip`](https://github.com/woct0rdho/triton-windows/releases/download/v3.0.0-windows.post1/python_3.13.2_include_libs.zip)
 
-After extracting, copy the `include` and `libs` folders into:
+Extract the archive, then copy both the `include` and `libs` folders into your ComfyUI embedded Python directory.
+
+Example destination:
 
 ```text
 F:\Software\ComfyUI Portable\python_embeded\
 ```
 
-The folder structure should end up looking like this:
+The resulting directory structure should look similar to this:
 
 ```text
-F:\Software\ComfyUI Portable\python_embeded\
-├── include\
-└── libs\
+python_embeded/
+├── include/
+└── libs/
 ```
 
-> **Note:** It's `libs`, not `lib`. The `python_embeded` folder may already contain a `Lib` folder (holding `site-packages`, etc.) — don't confuse it with, or overwrite it with, the newly copied `libs` folder.
+> [!CAUTION]
+> The required folder is named `libs`, not `lib`.
+>
+> The `python_embeded` directory may already contain a `Lib` folder, which stores `site-packages` and other Python files. Do not confuse it with the new `libs` folder, and do not overwrite the existing `Lib` folder.
 
 ---
 
 ## 4. Install SageAttention
 
-Download the wheel file matching your current environment:
+Download the wheel file that matches your current environment:
 
 ```text
 sageattention-2.2.0+cu130torch2.10.0andhigher.post6-cp310-abi3-win_amd64.whl
@@ -73,9 +93,9 @@ sageattention-2.2.0+cu130torch2.10.0andhigher.post6-cp310-abi3-win_amd64.whl
 
 Download link:
 
-[SageAttention v2.2.0 Windows Post 6](https://github.com/woct0rdho/SageAttention/releases/download/v2.2.0-windows.post6/sageattention-2.2.0+cu130torch2.10.0andhigher.post6-cp310-abi3-win_amd64.whl)
+[Download SageAttention v2.2.0 Windows Post 6](https://github.com/woct0rdho/SageAttention/releases/download/v2.2.0-windows.post6/sageattention-2.2.0+cu130torch2.10.0andhigher.post6-cp310-abi3-win_amd64.whl)
 
-Place the downloaded `.whl` file in the **ComfyUI root folder**, then run:
+Place the downloaded `.whl` file in the **ComfyUI root directory**, then run:
 
 ```powershell
 .\python_embeded\python.exe -m pip install .\sageattention-2.2.0+cu130torch2.10.0andhigher.post6-cp310-abi3-win_amd64.whl
@@ -83,16 +103,16 @@ Place the downloaded `.whl` file in the **ComfyUI root folder**, then run:
 
 ---
 
-## 5. Enable Sage Attention
+## 5. Enable SageAttention
 
-Edit both of the following files:
+Edit the following launch scripts:
 
 ```text
 run_nvidia_gpu.bat
 advanced\run_nvidia_gpu_disable_api_nodes.bat
 ```
 
-Append the following flag to the end of the ComfyUI launch command:
+Append this argument to the end of the ComfyUI launch command:
 
 ```text
 --use-sage-attention
@@ -108,9 +128,9 @@ Example:
 
 ## 6. Verify the Installation
 
-After launching ComfyUI, check the terminal or log output.
+Launch ComfyUI and check the terminal or log output.
 
-If you see the following message, Sage Attention has been enabled successfully:
+If the following message appears, SageAttention is enabled successfully:
 
 ```text
 Using sage attention
@@ -120,6 +140,35 @@ Using sage attention
 
 ## Troubleshooting
 
-- **`ImportError: DLL load failed while importing libtriton`**: Usually caused by an outdated vcredist. Reinstall [vc_redist.x64.exe](https://aka.ms/vs/17/release/vc_redist.x64.exe) and verify that `vcruntime140.dll` and similar files in the `python_embeded` folder are up to date.
-- **`ImportError: DLL load failed while importing cuda_utils`**: First delete the cache folder `C:\Users\<username>\.triton\cache\`, then double-check that the `include` and `libs` folders match your actual Python version (3.13).
-- If you update ComfyUI Portable (which may also update Python / PyTorch / CUDA), go back to Steps 2–4 and use the Triton and SageAttention wheels matching the new versions.
+### `ImportError: DLL load failed while importing libtriton`
+
+This is usually caused by a missing or outdated Visual C++ Runtime.
+
+1. Reinstall [Visual C++ Redistributable x64](https://aka.ms/vs/17/release/vc_redist.x64.exe).
+2. Check that files such as `vcruntime140.dll` and `msvcp140.dll` in `python_embeded` are not outdated or overwritten by older versions.
+3. Restart ComfyUI after installation.
+
+### `ImportError: DLL load failed while importing cuda_utils`
+
+Check the following:
+
+1. Delete the Triton cache folder:
+
+   ```text
+   C:\Users\<username>\.triton\cache\
+   ```
+
+2. Verify that the `include` and `libs` folders are located directly inside `python_embeded`.
+3. Confirm that the development files match the embedded Python version, which should be Python `3.13`.
+
+### SageAttention Stops Working After Updating ComfyUI Portable
+
+Updating ComfyUI Portable may also update Python, PyTorch, or CUDA.
+
+Recheck compatibility for the following components:
+
+- `triton-windows`
+- SageAttention wheel
+- Python development files: `include` and `libs`
+
+If necessary, repeat [Steps 2–4](#2-install-triton) using the versions compatible with the updated ComfyUI environment.
