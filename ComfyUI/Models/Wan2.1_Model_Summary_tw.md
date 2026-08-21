@@ -2,7 +2,7 @@
 
 ## 工作流
 
-1.  **[Wan-2.1_InfiniTetalk_Single.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Wan-2.1_InfiniTetalk_Single.json)**
+-  **[Wan-2.1_InfiniTetalk_Single.json](https://github.com/renvder/local-ai-toolkit/blob/main/ComfyUI/Workflows/Wan-2.1_InfiniTetalk_Single.json)**
     - **核心功能：** 一體化地根據圖像（視覺）、文本（提示詞）和音訊（語音）生成連貫且具有無限敘事感的視頻。
     - **模態融合：** 流程涉及四个核心模態的深度整合：
         *   **Image Embedding (圖像特徵)：** 使用 `WanVideoClipVisionEncode` 提取图像的时空信息。
