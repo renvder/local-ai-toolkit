@@ -1,3 +1,9 @@
+<p align="right">
+  🌐 <b></b>
+  <a href="./Wan2.1_Model_Summary.md"><b>EN</b></a> | 
+  <b>漢</b></a>
+</p>
+
 # Wan 2.1 InfiniTetalk：單人音訊驅動影片 模型摘要
 
 ## 工作流
