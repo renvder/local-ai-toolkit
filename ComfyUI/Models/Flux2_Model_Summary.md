@@ -1,3 +1,9 @@
+<p align="right">
+  🌐 <b></b>
+  <b>EN</b></a> | 
+  <a href="./README_tw.md"><b>漢</b></a>
+</p>
+
 # Flux2 Series Workflow Model Summary
 
 ## Workflows
