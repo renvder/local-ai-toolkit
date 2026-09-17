@@ -1,3 +1,9 @@
+<p align="right">
+  🌐 <b></b>
+  <b>EN</b></a> | 
+  <a href="./SeedVR_Model_Summary_tw.md"><b>漢</b></a>
+</p>
+
 # SeedVR Model Summary
 
 ## Workflows
