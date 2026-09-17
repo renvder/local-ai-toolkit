@@ -1,3 +1,9 @@
+<p align="right">
+  🌐 <b></b>
+  <b>EN</b></a> | 
+  <a href="./TripoSplat_I23D_Model_Summary_tw.md"><b>漢</b></a>
+</p>
+
 # TripoSplat: 2D Image to 3D Gaussian Model Summary
 
 ## Workflows
