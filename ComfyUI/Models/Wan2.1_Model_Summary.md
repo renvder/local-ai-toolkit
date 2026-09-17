@@ -1,3 +1,9 @@
+<p align="right">
+  🌐 <b></b>
+  <b>EN</b></a> | 
+  <a href="./Wan2.1_Model_Summary_tw.md"><b>漢</b></a>
+</p>
+
 # Wan 2.1 InfiniTetalk: Single Audio-Driven Video Model Summary
 
 ## Workflow
