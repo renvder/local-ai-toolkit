@@ -1,7 +1,7 @@
 <p align="right">
   🌐 <b></b>
   <b>EN</b></a> | 
-  <a href="./ComfyUI/Models/Flux2_Model_Summary_tw.md"><b>漢</b></a>
+  <a href="./local-ai-toolkit/ComfyUI/Models/Flux2_Model_Summary_tw.md"><b>漢</b></a>
 </p>
 
 # Flux2 Series Workflow Model Summary
