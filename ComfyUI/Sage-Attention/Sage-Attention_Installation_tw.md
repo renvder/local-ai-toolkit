@@ -1,3 +1,9 @@
+<p align="right">
+  🌐 <b></b>
+  <a href="./Sage-Attention_Installation.md"><b>EN</b></a> | 
+  <b>漢</b></a>
+</p>
+
 # SageAttention 安裝指南
 
 適用於 **Windows 11 + ComfyUI Portable（便攜版）**。
