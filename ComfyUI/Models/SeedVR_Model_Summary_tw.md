@@ -1,7 +1,6 @@
 <p align="right">
-  🌐 <b></b>
-  <a href="./SeedVR_Model_Summary.md"><b>EN</b></a> | 
-  <b>漢</b></a>
+  🌐 <a href="./SeedVR_Model_Summary.md"><b>EN</b></a> |
+  <b>漢</b>
 </p>
 
 # SeedVR 模型摘要
