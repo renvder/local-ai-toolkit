@@ -1,3 +1,8 @@
+<p align="right">
+  🌐 <b>EN</b> |
+  <a href="./Vision_Multimodal_Setup_tw.md"><b>漢</b></a>
+</p>
+
 # Why Vision Models Don't Work in llama-server Router Mode (and How to Fix It)
 
 ## The Problem
