@@ -1,7 +1,6 @@
 <p align="right">
-  🌐 <b></b>
-  <a href="./Qwen_Inpaint_Model_Summary.md"><b>EN</b></a> | 
-  <b>漢</b></a>
+  🌐 <a href="./Qwen_Inpaint_Model_Summary.md"><b>EN</b></a> |
+  <b>漢</b>
 </p>
 
 # Qwen 圖像編輯 模型摘要
