@@ -1,3 +1,8 @@
+<p align="right">
+  🌐 <a href="./Vision_Multimodal_Setup.md"><b>EN</b></a> |
+  <b>漢</b>
+</p>
+
 # 為什麼 llama-server Router 模式下視覺模型不會生效（以及如何修正）
 
 ## 問題描述
