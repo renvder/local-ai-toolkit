@@ -1,6 +1,5 @@
 <p align="right">
-  🌐 <b></b>
-  <b>EN</b></a> | 
+  🌐 <b>EN</b> |
   <a href="./Minimax-H3_I2V_Model_Summary_tw.md"><b>漢</b></a>
 </p>
 
