@@ -1,7 +1,6 @@
 <p align="right">
-  🌐 <b></b>
-  <a href="./Flux2_Model_Summary.md"><b>EN</b></a> | 
-  <b>漢</b></a>
+  🌐 <a href="./Flux2_Model_Summary.md"><b>EN</b></a> |
+  <b>漢</b>
 </p>
 
 # Flux2 系列工作流 模型摘要
