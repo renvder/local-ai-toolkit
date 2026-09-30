@@ -1,3 +1,8 @@
+<p align="right">
+  🌐 <a href="./README.md"><b>EN</b></a> |
+  <b>漢</b>
+</p>
+
 # ComfyUI Launcher
 
 適用於 Windows 的 [ComfyUI](https://github.com/comfyanonymous/ComfyUI) 輕量桌面啟動器。提供簡易圖形介面，可啟動／停止 ComfyUI、更新核心與自訂節點、從 Git 安裝擴充，並開啟網頁介面。
