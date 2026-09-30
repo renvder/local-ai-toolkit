@@ -1,7 +1,6 @@
 <p align="right">
-  🌐 <b></b>
-  <a href="./Minimax-H3_I2V_Model_Summary.md"><b>EN</b></a> | 
-  <b>漢</b></a>
+  🌐 <a href="./Minimax-H3_I2V_Model_Summary.md"><b>EN</b></a> |
+  <b>漢</b>
 </p>
 
 # MiniMax H3 跨模態圖像到視頻 模型摘要
