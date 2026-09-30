@@ -1,3 +1,8 @@
+<p align="right">
+  🌐 <b>EN</b> |
+  <a href="./README_tw.md"><b>漢</b></a>
+</p>
+
 # ComfyUI Launcher
 
 A lightweight desktop launcher for [ComfyUI](https://github.com/comfyanonymous/ComfyUI) on Windows. It provides a simple GUI to start/stop ComfyUI, update the core and custom nodes, install extensions from Git, and open the web UI.
