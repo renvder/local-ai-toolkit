@@ -1,7 +1,6 @@
 <p align="right">
-  🌐 <b></b>
-  <a href="./LTX-2.3_Model_Summary.md"><b>EN</b></a> | 
-  <b>漢</b></a>
+  🌐 <a href="./LTX-2.3_Model_Summary.md"><b>EN</b></a> |
+  <b>漢</b>
 </p>
 
 # LTX 2.3 模型摘要
