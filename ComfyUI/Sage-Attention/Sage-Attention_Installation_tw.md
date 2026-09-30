@@ -1,7 +1,6 @@
 <p align="right">
-  🌐 <b></b>
-  <a href="./Sage-Attention_Installation.md"><b>EN</b></a> | 
-  <b>漢</b></a>
+  🌐 <a href="./Sage-Attention_Installation.md"><b>EN</b></a> |
+  <b>漢</b>
 </p>
 
 # SageAttention 安裝指南
