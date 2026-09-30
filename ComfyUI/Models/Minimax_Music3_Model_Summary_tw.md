@@ -1,7 +1,6 @@
 <p align="right">
-  🌐 <b></b>
-  <a href="./Minimax_Music3_Model_Summary.md"><b>EN</b></a> | 
-  <b>漢</b></a>
+  🌐 <a href="./Minimax_Music3_Model_Summary.md"><b>EN</b></a> |
+  <b>漢</b>
 </p>
 
 # MiniMax Music 3：文本生成音訊 模型摘要
