@@ -1,6 +1,5 @@
 <p align="right">
-  🌐 <b></b>
-  <b>EN</b></a> | 
+  🌐 <b>EN</b> |
   <a href="./Wan2.1_Model_Summary_tw.md"><b>漢</b></a>
 </p>
 
