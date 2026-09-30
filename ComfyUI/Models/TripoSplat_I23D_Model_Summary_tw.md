@@ -1,7 +1,6 @@
 <p align="right">
-  🌐 <b></b>
-  <a href="./TripoSplat_I23D_Model_Summary.md"><b>EN</b></a> | 
-  <b>漢</b></a>
+  🌐 <a href="./TripoSplat_I23D_Model_Summary.md"><b>EN</b></a> |
+  <b>漢</b>
 </p>
 
 # TripoSplat：2D 圖像到 3D 模型摘要
