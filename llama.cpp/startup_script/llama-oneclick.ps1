@@ -1,75 +1,91 @@
-﻿# =====================================================================
-#  llama.cpp One-Click Launcher  (Windows / PowerShell)
-#  Auto-detect GPU → choose backend → calculate parameters → start router mode → open browser
-#  Usage: Right-click → "Run with PowerShell", or double-click the accompanying start.bat
+# =====================================================================
+#  llama.cpp One-Click Portable Launcher (Windows 11 / PowerShell 5.1+)
+#
+#  First run:
+#    1. Detect Windows architecture + GPU + NVIDIA driver/CUDA capability.
+#    2. Select the best official llama.cpp Windows backend.
+#    3. Download the latest stable release directly from ggml-org/llama.cpp.
+#    4. Install it under THIS SCRIPT'S directory (portable; no winget/CUDA toolkit required).
+#
+#  Later runs:
+#    - Reuse the locally installed runtime when it matches the detected hardware.
+#    - If the PC/backend changes, automatically install the appropriate runtime.
+#
+#  Backends:
+#    NVIDIA + driver >= 580  -> CUDA 13
+#    NVIDIA + driver >= 525  -> CUDA 12
+#    AMD / Intel             -> Vulkan
+#    Otherwise               -> CPU
+#
+#  The script keeps the existing model/router/VRAM/preset logic below.
 # =====================================================================
 
 $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-$PORT_PREF  = 8080                 # Preferred port; will auto-increment if occupied
-$MODELS_DIR = Join-Path $PSScriptRoot "models"
-# Maximum tokens to generate per response.
-# Must be significantly smaller than ctx-size, otherwise context fills up first
-# and this limit never takes effect.
-$MAX_PREDICT = 8192
-
-# Deep thinking mode (for models like Qwen3 / DeepSeek-R1 that use <think>)
-#   off  = Disable thinking, answer directly (default, simplest for beginners, least likely to go wild)
-#   on   = Enable thinking
-#   auto = Do not intervene, use the model's own default behavior
-# Note: When thinking is enabled you must raise the generation limit,
-#       otherwise all tokens are spent inside <think> and the actual answer
-#       is cut off (appears as blank / half-sentence replies).
+$ROOT       = (Resolve-Path $PSScriptRoot).Path
+$MODELS_DIR = Join-Path $ROOT "models"
+$RUNTIME_DIR = Join-Path $ROOT "runtime"
+$PORT_PREF  = 8080
+$MAX_PREDICT = 16384
 $THINKING = "off"
-
-# YaRN long-context extrapolation: 0 = disabled (recommended).
-# Only set a target length when you really need to stuff long documents,
-# e.g. 65536 / 131072.
-# Three important notes:
-#   1) llama.cpp YaRN is applied globally at startup; short-conversation quality also degrades;
-#   2) It only changes positional encoding — KV cache still grows linearly with context;
-#   3) Some GGUFs already bake YaRN into their metadata (check startup log for rope scaling).
-#      In that case do not set it again manually or you may cause problems.
-$YARN_CTX      = 0
-$YARN_ORIG_CTX = 32768             # Model's native context length (Qwen3 series = 32768)
+$YARN_CTX = 0
+$YARN_ORIG_CTX = 32768
 
 function Say($msg, $color = "White") { Write-Host $msg -ForegroundColor $color }
+function Fail($msg) { Say ""; Say "  $msg" Red; Read-Host "  Press Enter to exit"; exit 1 }
+
+Set-Location $ROOT
 
 Say ""
-Say "  llama.cpp One-Click Launcher" Cyan
+Say "  llama.cpp Portable One-Click Launcher" Cyan
 Say "  ---------------------------------------------" DarkGray
 
 # ---------------------------------------------------------------------
-# 1. Hardware detection
+# 0. Windows / architecture detection
 # ---------------------------------------------------------------------
-$gpuName   = "No discrete GPU"
-$vramGB    = 0
-$vendor    = "cpu"
+$osArch = $env:PROCESSOR_ARCHITECTURE
+if ($env:PROCESSOR_ARCHITEW6432) { $osArch = $env:PROCESSOR_ARCHITEW6432 }
+if ($osArch -notmatch "AMD64|x64") {
+    Fail "This portable package currently targets Windows x64. Detected architecture: $osArch"
+}
 
-# NVIDIA: nvidia-smi is the most accurate
+# ---------------------------------------------------------------------
+# 1. Hardware detection + automatic backend selection
+# ---------------------------------------------------------------------
+$gpuName = "No supported discrete GPU"
+$vramGB = 0
+$vendor = "cpu"
+$driverVersion = $null
+$cudaReported = $null
+
 if (Get-Command nvidia-smi -ErrorAction SilentlyContinue) {
     try {
-        $line = (& nvidia-smi --query-gpu=name,memory.total --format=csv,noheader,nounits 2>$null | Select-Object -First 1)
+        $line = (& nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader,nounits 2>$null | Select-Object -First 1)
         if ($line) {
-            $parts   = $line -split ","
+            $parts = $line -split ","
             $gpuName = $parts[0].Trim()
-            $vramGB  = [math]::Round([double]$parts[1].Trim() / 1024, 1)
-            $vendor  = "cuda"
+            $vramGB = [math]::Round([double]$parts[1].Trim() / 1024, 1)
+            $driverVersion = $parts[2].Trim()
+            $vendor = "cuda"
+            try {
+                $smi = (& nvidia-smi 2>$null | Out-String)
+                if ($smi -match "CUDA Version:\s*([0-9]+\.[0-9]+)") { $cudaReported = $Matches[1] }
+            } catch { }
         }
     } catch { }
 }
 
-# AMD / Intel: read VRAM from registry
-# (Win32_VideoController.AdapterRAM overflows above 4 GB, so we cannot use it)
+# AMD / Intel: Vulkan is the portable Windows GPU fallback.
 if ($vendor -eq "cpu") {
-    $cards = Get-CimInstance Win32_VideoController |
+    $cards = Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue |
              Where-Object { $_.Name -notmatch "Basic Display|Remote|Meta|Parsec|Virtual" }
     foreach ($c in $cards) {
         $n = $c.Name
         if ($n -match "Radeon|AMD|Intel\s+Arc|Intel\(R\)\s+Arc") {
             $gpuName = $n
-            $vendor  = "vulkan"   # Vulkan is the most reliable backend for AMD / Intel on Windows
+            if ($n -match "Radeon|AMD") { $vendor = "vulkan" }
+            elseif ($n -match "Arc") { $vendor = "vulkan" }
             break
         }
     }
@@ -82,19 +98,209 @@ if ($vendor -eq "cpu") {
     }
 }
 
-$ramGB    = [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 1)
-$cores    = (Get-CimInstance Win32_Processor | Measure-Object -Property NumberOfCores -Sum).Sum
+$ramGB = [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 1)
+$cores = (Get-CimInstance Win32_Processor | Measure-Object -Property NumberOfCores -Sum).Sum
 if (-not $cores) { $cores = [Environment]::ProcessorCount / 2 }
-$threads  = [math]::Max(4, [math]::Min($cores, 16))   # Use physical cores, hard-cap at 16 (diminishing returns beyond)
+$threads = [math]::Max(4, [math]::Min($cores, 16))
+
+# NVIDIA driver major determines CUDA family. CUDA 13.x requires R580+;
+# CUDA 12.x supports R525+ under NVIDIA's minor-version compatibility rules.
+if ($vendor -eq "cuda") {
+    $driverMajor = 0
+    if ($driverVersion -match "^(\d+)") { $driverMajor = [int]$Matches[1] }
+    if ($driverMajor -ge 580) {
+        $backend = "cuda13"
+        $backendLabel = "NVIDIA CUDA 13"
+    } elseif ($driverMajor -ge 525) {
+        $backend = "cuda12"
+        $backendLabel = "NVIDIA CUDA 12"
+    } else {
+        $backend = "vulkan"
+        $backendLabel = "NVIDIA Vulkan fallback (driver too old for CUDA 12)"
+        $vendor = "vulkan"
+    }
+} elseif ($vendor -eq "vulkan") {
+    $backend = "vulkan"
+    $backendLabel = "Vulkan"
+} else {
+    $backend = "cpu"
+    $backendLabel = "CPU"
+}
 
 Say ""
-Say "  GPU      : $gpuName" White
-Say "  VRAM     : $(if ($vramGB -gt 0) { "$vramGB GB" } else { "—" })" White
-Say "  RAM      : $ramGB GB" White
-Say "  Cores    : $cores" White
+Say "  GPU          : $gpuName" White
+Say "  VRAM         : $(if ($vramGB -gt 0) { "$vramGB GB" } else { "-" })" White
+Say "  RAM          : $ramGB GB" White
+Say "  CPU cores    : $cores" White
+if ($driverVersion) { Say "  NVIDIA driver: $driverVersion (nvidia-smi CUDA $cudaReported)" White }
+Say "  Selected     : $backendLabel" Green
 
 # ---------------------------------------------------------------------
-# 2. Choose port
+# 2. Portable llama.cpp runtime installation / reuse
+# ---------------------------------------------------------------------
+function Get-LocalRuntime {
+    $preferred = @(
+        (Join-Path $RUNTIME_DIR $backend),
+        (Join-Path $ROOT "llama-$backend"),
+        (Join-Path $ROOT "llama.cpp")
+    )
+    foreach ($d in $preferred) {
+        $e = Join-Path $d "llama-server.exe"
+        if (Test-Path $e) { return $e }
+    }
+    # Preserve compatibility with an existing llama-server.exe directly under the package.
+    $rootExe = Join-Path $ROOT "llama-server.exe"
+    if (Test-Path $rootExe) { return $rootExe }
+    return $null
+}
+
+function Get-ReleasesWithAssets {
+    $headers = @{ "User-Agent" = "llama.cpp-portable-launcher"; "Accept" = "application/vnd.github+json" }
+    try {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        # The newest stable release may not carry binary assets.  Search the
+        # official release list and select the newest release that actually
+        # contains the required Windows x64 backend.
+        return Invoke-RestMethod -Uri "https://api.github.com/repos/ggml-org/llama.cpp/releases?per_page=100" -Headers $headers -UseBasicParsing
+    } catch {
+        throw "Cannot query the official llama.cpp GitHub release API: $($_.Exception.Message)"
+    }
+}
+
+function Find-Asset($assets, $pattern) {
+    return $assets | Where-Object { $_.name -match $pattern } | Select-Object -First 1
+}
+
+# GitHub exposes "sha256:<hex>" in asset.digest. Verify the download when it is available.
+function Test-AssetHash($asset, $path) {
+    if ($asset.digest -and ($asset.digest -match '^sha256:([0-9a-fA-F]{64})$')) {
+        $actual = (Get-FileHash -Path $path -Algorithm SHA256).Hash
+        if ($actual -ne $Matches[1]) {
+            throw "SHA-256 mismatch for $($asset.name). The download may be corrupted; please run again."
+        }
+    }
+}
+
+function Install-PortableRuntime {
+    if (-not (Test-Path $RUNTIME_DIR)) { New-Item -ItemType Directory -Path $RUNTIME_DIR | Out-Null }
+
+    Say ""
+    Say "  No suitable local llama.cpp runtime found." Yellow
+    Say "  Selecting the official Windows x64 build for: $backendLabel" Yellow
+    Say "  Downloading from ggml-org/llama.cpp ..." Cyan
+
+    # Do not assume /releases/latest contains binaries.  Since v0.5.0 the
+    # newest stable release can point to a nightly build while carrying only
+    # a marker asset.  Search the official release list for the newest release
+    # that actually contains the backend we need.
+    $releases = Get-ReleasesWithAssets
+    $main = $null
+    $cudart = $null
+    $release = $null
+
+    switch ($backend) {
+        "cuda13" {
+            $mainPattern = '^llama-.*-bin-win-cuda-13\.\d+-x64\.zip$'
+            $cudartPattern = '^cudart-llama-bin-win-cuda-13\.\d+-x64\.zip$'
+        }
+        "cuda12" {
+            $mainPattern = '^llama-.*-bin-win-cuda-12\.\d+-x64\.zip$'
+            $cudartPattern = '^cudart-llama-bin-win-cuda-12\.\d+-x64\.zip$'
+        }
+        "vulkan" { $mainPattern = '^llama-.*-bin-win-vulkan-x64\.zip$' }
+        default   { $mainPattern = '^llama-.*-bin-win-cpu-x64\.zip$' }
+    }
+
+    foreach ($r in ($releases | Where-Object { -not $_.draft } | Sort-Object { [datetime]$_.published_at } -Descending)) {
+        $assets = @($r.assets)
+        $candidate = Find-Asset $assets $mainPattern
+        if (-not $candidate) { continue }
+
+        if ($backend -eq "cuda13" -or $backend -eq "cuda12") {
+            $candidateCudart = Find-Asset $assets $cudartPattern
+            if (-not $candidateCudart) { continue }
+            $cudart = $candidateCudart
+        }
+
+        $release = $r
+        $main = $candidate
+        break
+    }
+
+    if (-not $release -or -not $main) {
+        throw "No official Windows x64 build for $backend was found in the latest 100 llama.cpp releases."
+    }
+
+    $tag = $release.tag_name
+
+    $target = Join-Path $RUNTIME_DIR $backend
+    $temp = Join-Path $env:TEMP ("llama-cpp-portable-" + [guid]::NewGuid().ToString("N"))
+    New-Item -ItemType Directory -Path $temp | Out-Null
+
+    try {
+        $mainZip = Join-Path $temp $main.name
+        Say "  Release      : $tag" White
+        Say "  Binary       : $($main.name)" White
+        Invoke-WebRequest -Uri $main.browser_download_url -OutFile $mainZip -UseBasicParsing
+        Test-AssetHash $main $mainZip
+
+        $allZips = @($mainZip)
+        if ($cudart) {
+            $cudaZip = Join-Path $temp $cudart.name
+            Say "  CUDA runtime : $($cudart.name)" White
+            Invoke-WebRequest -Uri $cudart.browser_download_url -OutFile $cudaZip -UseBasicParsing
+            Test-AssetHash $cudart $cudaZip
+            $allZips += $cudaZip
+        }
+
+        if (Test-Path $target) { Remove-Item $target -Recurse -Force }
+        New-Item -ItemType Directory -Path $target | Out-Null
+
+        foreach ($z in $allZips) {
+            Expand-Archive -Path $z -DestinationPath $target -Force
+        }
+
+        # Some releases put binaries in a nested directory. Flatten one level when needed.
+        $found = Get-ChildItem $target -Recurse -Filter "llama-server.exe" -File | Select-Object -First 1
+        if (-not $found) { throw "Download completed, but llama-server.exe was not found after extraction." }
+
+        # If nested, move the extracted contents to the backend root.
+        if ($found.Directory.FullName -ne $target) {
+            $nested = $found.Directory.FullName
+            Get-ChildItem $nested -Force | Move-Item -Destination $target -Force
+            if (Test-Path $nested) { Remove-Item $nested -Recurse -Force -ErrorAction SilentlyContinue }
+        }
+
+        $info = [ordered]@{
+            backend = $backend
+            backend_label = $backendLabel
+            release = $tag
+            asset = $main.name
+            cuda_runtime_asset = if ($cudart) { $cudart.name } else { $null }
+            installed_at = (Get-Date).ToString("o")
+        }
+        $info | ConvertTo-Json | Set-Content -Path (Join-Path $target "runtime-info.json") -Encoding UTF8
+        return (Join-Path $target "llama-server.exe")
+    } finally {
+        if (Test-Path $temp) { Remove-Item $temp -Recurse -Force -ErrorAction SilentlyContinue }
+    }
+}
+
+$exe = Get-LocalRuntime
+if (-not $exe) {
+    try { $exe = Install-PortableRuntime }
+    catch { Fail "Automatic llama.cpp installation failed.`n`n$($_.Exception.Message)" }
+}
+
+if (-not $exe -or -not (Test-Path $exe)) {
+    Fail "llama-server.exe was not found after installation."
+}
+
+Say ""
+Say "  llama.cpp    : $exe" Green
+
+# ---------------------------------------------------------------------
+# 3. Choose port
 #    On Windows, 8080 is frequently inside Hyper-V / WSL reserved ranges
 #    (visible via netsh). Binding then fails with an obscure error,
 #    so we probe first and fall back.
@@ -120,51 +326,21 @@ foreach ($cand in @($PORT_PREF, 8090, 8081, 8188, 11434, 18080)) {
 if (-not $PORT) { $PORT = 18080 }
 if ($PORT -ne $PORT_PREF) { Say ""; Say "  Port $PORT_PREF is occupied or system-reserved, using $PORT instead" Yellow }
 
-# ---------------------------------------------------------------------
-# 3. Locate llama-server
-#    Multiple versions may exist in the folder (CPU / older builds).
-#    Prefer paths containing cuda / vulkan, then take the newest by date.
-# ---------------------------------------------------------------------
-$cands = @(Get-ChildItem $PSScriptRoot -Recurse -Filter "llama-server.exe" -ErrorAction SilentlyContinue)
-if ($cands.Count -gt 0) {
-    $exe = ($cands | Sort-Object `
-        @{ Expression = { if ($_.FullName -match "cuda|cu1\d|vulkan|hip") { 0 } else { 1 } } }, `
-        @{ Expression = { $_.LastWriteTime }; Descending = $true } |
-        Select-Object -First 1).FullName
-} else {
-    $exe = (Get-Command llama-server -ErrorAction SilentlyContinue).Source
-}
-
-if (-not $exe) {
-    Say ""
-    Say "  llama-server not found, installing via winget…" Yellow
-    try {
-        winget install llama.cpp --accept-package-agreements --accept-source-agreements
-    } catch {
-        Say "  winget failed, falling back to official install script llama.app…" Yellow
-        Invoke-RestMethod https://llama.app/install.ps1 | Invoke-Expression
-    }
-    $env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [Environment]::GetEnvironmentVariable("Path", "User")
-    $exe = (Get-Command llama-server -ErrorAction SilentlyContinue).Source
-}
-if (-not $exe) {
-    Say "  Installation failed. Please download manually from https://github.com/ggml-org/llama.cpp/releases and retry." Red
-    Read-Host "  Press Enter to exit"; exit 1
-}
-Say ""
-Say "  Executable : $exe" DarkGray
 
 # ---------------------------------------------------------------------
 # 4. Probe which flags the current version supports
 #    (flag names change between versions; probe first to avoid immediate crash)
 # ---------------------------------------------------------------------
-$help = (& $exe --help 2>&1) -join "`n"
+$prevEAP = $ErrorActionPreference
+$ErrorActionPreference = "Continue"     # PS 5.1: native stderr + Stop would abort here
+$help = (& $exe --help 2>&1 | ForEach-Object { "$_" }) -join "`n"
+$ErrorActionPreference = $prevEAP
 function Has($flag) { return $help -match [regex]::Escape($flag) }
 
 if (-not (Has "--models-dir")) {
     Say ""
     Say "  Your llama.cpp version is too old and does not support router mode (hot model switching)." Red
-    Say "  Please upgrade: winget upgrade llama.cpp" Yellow
+    Say "  Delete the runtime\$backend folder and run start.bat again to download the latest build." Yellow
     Read-Host "  Press Enter to exit"; exit 1
 }
 
@@ -203,7 +379,7 @@ if ($YARN_CTX -gt $YARN_ORIG_CTX) {
         $ctx    = $YARN_CTX
         $yarnScale = [math]::Round($YARN_CTX / $YARN_ORIG_CTX, 2)
         Say ""
-        Say "  YaRN enabled: $YARN_ORIG_CTX → $YARN_CTX (scale $yarnScale)" Yellow
+        Say "  YaRN enabled: $YARN_ORIG_CTX -> $YARN_CTX (scale $yarnScale)" Yellow
         Say "  KV cache will grow proportionally; if VRAM is insufficient a large amount will spill to RAM and speed will drop noticeably." Yellow
         Say "  Short-conversation quality is also affected. Set YARN_CTX back to 0 when you do not need long context." Yellow
     } else {
@@ -217,7 +393,7 @@ if ($THINKING -ne "off" -and $MAX_PREDICT -lt 16384) { $MAX_PREDICT = 16384 }
 
 Say ""
 Say "  Matched tier : $tier" Green
-Say "  Backend      : $vendor" Green
+Say "  Backend      : $backendLabel" Green
 Say "  Port         : $PORT" Green
 Say "  Thinking     : $(switch ($THINKING) { 'off' { 'off (answer directly)' } 'on' { 'on' } default { 'follow model default' } })" Green
 Say "  Max predict  : $MAX_PREDICT tokens" Green
@@ -232,11 +408,11 @@ Say ""
 if ($ggufs.Count -eq 0) {
     Say "  models folder is empty." Yellow
     Say "  Recommended models for your VRAM (place them into the models folder):" Yellow
-    if     ($vramGB -ge 24) { Say "    · Qwen3 32B Instruct  Q4_K_M   (~20 GB)" }
-    elseif ($vramGB -ge 16) { Say "    · Qwen3 14B Instruct  Q4_K_M   (~9 GB)" }
-    elseif ($vramGB -ge 11) { Say "    · Qwen3 14B Instruct  Q4_K_M   (~9 GB)" }
-    elseif ($vramGB -ge 7)  { Say "    · Qwen3 8B Instruct   Q4_K_M   (~5 GB)" }
-    else                    { Say "    · Qwen3 4B Instruct   Q4_K_M   (~2.5 GB)" }
+    if     ($vramGB -ge 24) { Say "    - Qwen3 32B Instruct  Q4_K_M   (~20 GB)" }
+    elseif ($vramGB -ge 16) { Say "    - Qwen3 14B Instruct  Q4_K_M   (~9 GB)" }
+    elseif ($vramGB -ge 11) { Say "    - Qwen3 14B Instruct  Q4_K_M   (~9 GB)" }
+    elseif ($vramGB -ge 7)  { Say "    - Qwen3 8B Instruct   Q4_K_M   (~5 GB)" }
+    else                    { Say "    - Qwen3 4B Instruct   Q4_K_M   (~2.5 GB)" }
     Say ""
     Say "  Multi-part GGUFs or multimodal models with mmproj should each go into their own sub-folder." DarkGray
     Say "  After placing the files, re-run this script." DarkGray
@@ -245,36 +421,30 @@ if ($ggufs.Count -eq 0) {
 
 Say "  Found $($ggufs.Count) model(s):" Green
 $ggufs | Select-Object -First 8 | ForEach-Object {
-    Say ("    · {0}  ({1} GB)" -f $_.Name, [math]::Round($_.Length / 1GB, 1)) DarkGray
+    Say ("    - {0}  ({1} GB)" -f $_.Name, [math]::Round($_.Length / 1GB, 1)) DarkGray
 }
-if ($ggufs.Count -gt 8) { Say "    · …and $($ggufs.Count - 8) more" DarkGray }
+if ($ggufs.Count -gt 8) { Say "    - ...and $($ggufs.Count - 8) more" DarkGray }
 
 # ---------------------------------------------------------------------
-# 7. Read presets.ini – check which keys the user already defined under [*]
-#    Keys that are already set in the preset will NOT be passed on the CLI
-#    to avoid conflicts (previously -c 32768 would override a 16384 in the ini).
+# 7. presets.ini (optional)
+#    Precedence in llama-server: CLI args > per-model section > [*] global section.
+#    Anything passed on the CLI therefore overrides presets.ini, so this launcher
+#    does NOT pass ctx-size (>=16 GB VRAM) or sampling params on the CLI.
+#    Put those in presets.ini instead.
 # ---------------------------------------------------------------------
 $presets    = Join-Path $PSScriptRoot "presets.ini"
-$presetKeys = @()
 $usePresets = (Test-Path $presets) -and (Has "--models-preset")
 
 if ($usePresets) {
-    $inStar = $false
-    foreach ($l in (Get-Content $presets -Encoding UTF8)) {
-        $t = $l.Trim()
-        if ($t -match '^\[(.+)\]$') { $inStar = ($Matches[1] -eq '*'); continue }
-        if ($inStar -and $t -match '^([A-Za-z0-9\-_]+)\s*=') { $presetKeys += $Matches[1].ToLower() }
-    }
     Say ""
-    Say "  presets.ini loaded (used only for per-model overrides; common parameters still come from the command line)" Green
-    Say "  Note: section names must be exact model names; [*] wildcards are NOT supported." DarkGray
-    Say "  After start, check the log for 'Loaded N custom model presets'. N=0 means the format did not match." DarkGray
+    Say "  presets.ini loaded (per-model ctx-size / sampling live here)" Green
+    Say "  Note: [Section] names must equal the model names shown in 'Available models' in the log." DarkGray
+    Say "  Check the log for 'Loaded N custom model presets'; N=0 means no section name matched." DarkGray
 } elseif (Test-Path $presets) {
     Say ""
     Say "  presets.ini detected, but this version does not support --models-preset; ignored." Yellow
 }
 
-function NotInPreset($k) { return -not ($presetKeys -contains $k.ToLower()) }
 
 # ---------------------------------------------------------------------
 # 8. Assemble launch arguments
@@ -289,26 +459,30 @@ if (Has "--ctx-shift") { $srvArgs += "--ctx-shift" }
 
 if ($usePresets) { $srvArgs += @("--models-preset", $presets) }
 
-# When YaRN is enabled the CLI must own the context size,
-# otherwise a short ctx in the ini will conflict with the extrapolated rope.
-# -c is always passed from the command line.
-# Older versions skipped -c when presets.ini contained ctx-size, but llama-server
-# is very strict about section names in custom preset files ([*] wildcards are ignored
-# and the log will show "Loaded 0 custom model presets"). If the preset is not loaded
-# neither side sets the value and the built-in default is used. Command line is the
-# only reliable path.
-$srvArgs += @("-c", "$ctx")
+# ctx-size: only forced from the CLI when needed (YaRN, or <16 GB VRAM / <16 GB RAM safety cap).
+# Otherwise presets.ini decides; with ctx-size = 0 (native) llama.cpp's --fit shrinks it to fit VRAM.
+$cliCtx = $yarnOn -or ($vramGB -lt 16) -or ($ramGB -lt 16)
+if ($cliCtx) { $srvArgs += @("-c", "$ctx") }
 if ($yarnOn) {
     $srvArgs += @("--rope-scaling", "yarn", "--rope-scale", "$yarnScale")
     if (Has "--yarn-orig-ctx") { $srvArgs += @("--yarn-orig-ctx", "$YARN_ORIG_CTX") }
     Say "  Context    : $ctx tokens (YaRN extrapolated)" Green
+} elseif ($cliCtx) {
+    Say "  Context    : $ctx tokens (from launcher)" Green
 } else {
-    Say "  Context    : $ctx tokens" Green
+    Say "  Context    : decided by presets.ini / --fit (see 'fit' lines in the log)" Green
 }
 
 if (Has "--models-max") { $srvArgs += @("--models-max", "$maxModels") }
 
-# ★ Generation limit: llama-server defaults to --predict -1 (unlimited).
+# Single-user setup: one slot; larger physical batch speeds up prompt processing (uses a bit more VRAM)
+if (Has "--parallel")     { $srvArgs += @("-np", "1") }
+if ($vendor -ne "cpu") {
+    if (Has "--ubatch-size") { $srvArgs += @("-ub", "1024") }
+    if (Has "--batch-size")  { $srvArgs += @("-b", "2048") }
+}
+
+# * Generation limit: llama-server defaults to --predict -1 (unlimited).
 #   Once the model starts repeating it will fill the entire context and hang at 0 remaining.
 #   We therefore impose a hard ceiling.
 #   Note that the max-tokens setting in the web UI overrides this; set both.
@@ -346,17 +520,10 @@ if ($THINKING -eq "off") {
     if (Has "--reasoning-format") { $srvArgs += @("--reasoning-format", "auto") }
 }
 
-# Sampling defaults: Qwen3 officially recommends two different sets for the two modes; do not mix them
-if ($THINKING -eq "on") {
-    $sTemp = "0.6"; $sTopP = "0.95"; $sPresence = "0.5"   # In thinking mode a high presence penalty causes Chinese/English mixing
-} else {
-    $sTemp = "0.7"; $sTopP = "0.8";  $sPresence = "1.0"   # Non-thinking mode; presence mainly suppresses repetition
-}
-if (Has "--temp")             { $srvArgs += @("--temp", $sTemp) }
-if (Has "--top-p")            { $srvArgs += @("--top-p", $sTopP) }
-if (Has "--top-k")            { $srvArgs += @("--top-k", "20") }
-if (Has "--min-p")            { $srvArgs += @("--min-p", "0") }
-if (Has "--presence-penalty") { $srvArgs += @("--presence-penalty", $sPresence) }
+# Sampling (temp / top-p / top-k / min-p / presence-penalty) is intentionally NOT passed here:
+# CLI args would override per-model values in presets.ini. Set them per model there.
+# Qwen3 reference: thinking on  -> temp 0.6, top-p 0.95, presence 0.5
+#                  thinking off -> temp 0.7, top-p 0.8,  presence 1.0   (top-k 20, min-p 0)
 
 # VRAM allocation: prefer --fit auto-calculation; fall back to full offload if the version lacks it
 if (Has "--fit-target") {
@@ -372,13 +539,13 @@ Say ""
 Say "  Launch command:" DarkGray
 Say "  $exe $($srvArgs -join ' ')" DarkGray
 Say ""
-Say "  Starting… Browser will open automatically at http://127.0.0.1:$PORT" Cyan
+Say "  Starting... Browser will open automatically at http://127.0.0.1:$PORT" Cyan
 Say "  You can switch models any time from the drop-down in the top-left of the web UI; no restart needed." Cyan
 Say "  Tip: also set max tokens to $MAX_PREDICT in the web UI settings (top-right); do not leave it at -1." Yellow
 Say "  Closing this black window stops the server." DarkGray
 Say ""
 
-# Probe the TCP port directly instead of /health —
+# Probe the TCP port directly instead of /health -
 # in router mode /health returns 503 while no model is loaded,
 # which makes Invoke-WebRequest throw and the browser never opens.
 Start-Job -ScriptBlock {
