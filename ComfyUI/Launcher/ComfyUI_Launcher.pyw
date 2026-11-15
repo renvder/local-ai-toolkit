@@ -51,6 +51,70 @@ BG = "#0d1117"; PANEL = "#161b22"; BORDER = "#30363d"; ACCENT = "#58a6ff"; ACCEN
 GREEN = "#3fb950"; RED = "#f85149"; AMBER = "#f0b72f"; TEXT = "#c9d1d9"; TEXT_DIM = "#8b949e"
 SANS = "Segoe UI"; MONO = "Consolas"
 
+# Bilingual UI strings: {"key": {"en": English, "zh": 正體中文}}
+T = {
+    "title_a": {"en": "⬡ ComfyUI", "zh": "⬡ ComfyUI"},
+    "title_b": {"en": " Launcher", "zh": "啓動器"},
+    "lang": {"en": "漢", "zh": "EN"},
+    "st_not": {"en": " Not running", "zh": "未在運行"},
+    "st_run": {"en": " Running", "zh": "運行中"},
+    "st_run_adv": {"en": " Running (API disabled)", "zh": "運行中（禁用API）"},
+    "btn_start": {"en": "▶  Start", "zh": "▶  標準啓動"},
+    "btn_noapi": {"en": "▶  No API", "zh": "▶  禁用API啓動"},
+    "btn_stop": {"en": "■  Stop", "zh": "■  停止"},
+    "btn_upd_comfy": {"en": "↑  Update ComfyUI", "zh": "↑  更新 ComfyUI"},
+    "btn_upd_ext": {"en": "↑  Update Extensions", "zh": "↑  更新擴展"},
+    "btn_browser": {"en": "🌐  Open UI", "zh": "🌐  打開界面"},
+    "btn_install": {"en": "⬇  Install", "zh": "⬇  安裝"},
+    "btn_clear": {"en": "Clear", "zh": "清空"},
+    "inst_label": {"en": "Install Extension (Git URL)", "zh": "安裝擴展（Git URL）"},
+    "log_title": {"en": "OUTPUT LOG", "zh": "輸出日志"},
+    "ready": {"en": "✦  ComfyUI Launcher is ready", "zh": "✦  ComfyUI 啓動器就緒"},
+    "ls_std": {"en": "Launch script (standard)", "zh": "啓動脚本（標準）"},
+    "ls_adv": {"en": "Launch script (disable API)", "zh": "啓動脚本（禁用API）"},
+    "up_bat": {"en": "Update script", "zh": "更新脚本"},
+    "cn_dir": {"en": "custom_nodes", "zh": "custom_nodes"},
+    "py_dir": {"en": "python_embeded", "zh": "python_embeded"},
+    "already_running": {"en": "Already running (port 8188 is in use)", "zh": "已在運行（端口 8188 已被占用）"},
+    "not_found": {"en": "Launch script not found: {path}", "zh": "找不到啓動脚本：{path}"},
+    "starting": {"en": "▶  Starting ComfyUI …", "zh": "▶  正在啓動 ComfyUI …"},
+    "starting_adv": {"en": "▶  Starting with API nodes disabled …", "zh": "▶  啓動中（已禁用 API 節點）…"},
+    "start_fail": {"en": "Failed to start: {e}", "zh": "啓動失敗：{e}"},
+    "stream_err": {"en": "Log read error: {e}", "zh": "日志读取錯誤：{e}"},
+    "ready_opened": {"en": "🌐  Port 8188 ready – launcher opened the browser", "zh": "🌐  端口 8188 就緒，啓動器已打開瀏覽器"},
+    "ready_explorer": {"en": "🌐  Port 8188 ready – opened via explorer", "zh": "🌐  端口 8188 就緒，已通過系統浏览器打開"},
+    "timeout": {"en": "⚠  Timed out waiting for ComfyUI to start", "zh": "⚠  等待 ComfyUI 啓動超時"},
+    "attached": {"en": "⚠  Port 8188 in use – external ComfyUI detected, status set to Running", "zh": "⚠  端口 8188 已被占用——检测到外部运行的 ComfyUI，状态已设为运行中"},
+    "exited": {"en": "■  ComfyUI process has exited", "zh": "■  ComfyUI 進程已退出"},
+    "confirm_stop_title": {"en": "Confirm Stop", "zh": "確認停止"},
+    "confirm_stop_text": {"en": "ComfyUI is running. Are you sure you want to stop it?\n\nThis will interrupt ComfyUI.", "zh": "ComfyUI 正在運行。確定要停止嗎？\n\n這將中斷 ComfyUI。"},
+    "stopping": {"en": "■  Stopping ComfyUI …", "zh": "■  正在停止 ComfyUI …"},
+    "stopped": {"en": "■  Stopped", "zh": "■  已停止"},
+    "opened_ui": {"en": "🌐  Opened UI", "zh": "🌐  已打開界面"},
+    "confirm_exit_title": {"en": "Confirm Exit", "zh": "確認退出"},
+    "confirm_exit_text": {"en": "ComfyUI is running. Are you sure you want to stop it and exit?\n\nThis will interrupt ComfyUI.", "zh": "ComfyUI 正在運行。確定要停止并退出嗎？\n\n這將中斷 ComfyUI。"},
+    "updating_comfy": {"en": "↑  Updating ComfyUI …", "zh": "↑  正在更新 ComfyUI …"},
+    "upd_done": {"en": "✔ Update complete", "zh": "✔ 更新完成"},
+    "upd_fail": {"en": "✘ Update failed {code}", "zh": "✘ 更新失敗 {code}"},
+    "upd_err": {"en": "Update error: {e}", "zh": "更新出錯：{e}"},
+    "upd_not": {"en": "Update script not found", "zh": "找不到更新脚本"},
+    "no_nodes": {"en": "custom_nodes directory not found", "zh": "找不到 custom_nodes 目錄"},
+    "no_git_ext": {"en": "No git extensions found", "zh": "未找到 Git 擴展"},
+    "checking_ext": {"en": "↑ Checking {n} extensions in parallel…", "zh": "↑ 并發檢查 {n} 個擴展…"},
+    "uptodate": {"en": "  ✔ {name} is up to date", "zh": "  ✔ {name} 已是最新"},
+    "updating_ext": {"en": "↓ Updating {n} extension(s)…", "zh": "↓ 正在更新 {n} 個擴展…"},
+    "ext_ok": {"en": "     ✔ {name}", "zh": "     ✔ {name}"},
+    "ext_fail": {"en": "     ✘ {name}", "zh": "     ✘ {name}"},
+    "all_uptodate": {"en": "✔ All extensions are up to date", "zh": "✔ 所有擴展均為最新"},
+    "enter_url": {"en": "Please enter a Git URL", "zh": "請輸入 Git URL"},
+    "dir_exists": {"en": "Directory already exists", "zh": "目錄已存在"},
+    "installing": {"en": "⬇ Installing {name} …", "zh": "⬇ 正在安裝 {name} …"},
+    "installed": {"en": "✔ Installed successfully: {name}", "zh": "✔ 安裝成功：{name}"},
+    "install_failed": {"en": "✘ Install failed", "zh": "✘ 安裝失敗"},
+    "git_missing": {"en": "✘ git not found", "zh": "✘ 未找到 git"},
+    "err": {"en": "Error: {e}", "zh": "錯誤：{e}"},
+}
+
 def _lighten(c, a=28):
     try:
         h = c.lstrip("#")
@@ -62,6 +126,17 @@ def _lighten(c, a=28):
     except:
         return c
 
+def is_port_in_use(port):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(0.15)
+    try:
+        s.connect(("127.0.0.1", port))
+        s.close()
+        return True
+    except Exception:
+        s.close()
+        return False
+
 class ComfyLauncher(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -70,15 +145,26 @@ class ComfyLauncher(tk.Tk):
         self.minsize(1100, 640)
         self.configure(bg=BG)
         self.resizable(True, True)
+        self.withdraw()
 
         self._comfy_proc = None
         self._log_lock = threading.Lock()
         self._auto_open_done = False
+        self.lang = "zh"           # "zh" = 正體中文, "en" = English
+        self._is_running = False
+        self._is_adv = False
+        self._text_btns = []
 
         self._set_icon()
         self._build_ui()
         self._check_paths()
         self.protocol("WM_DELETE_WINDOW", self._on_close)
+        def _probe():
+            if is_port_in_use(8188):
+                self.after(0, lambda: (self._set_running(True),
+                                       self._log(T["attached"][self.lang], "warn")))
+        threading.Thread(target=_probe, daemon=True).start()
+        self.deiconify()
 
     def _set_icon(self):
         try:
@@ -94,39 +180,44 @@ class ComfyLauncher(tk.Tk):
     def _build_ui(self):
         hdr = tk.Frame(self, bg=BG)
         hdr.pack(fill="x", padx=20, pady=(20, 12))
-        tk.Label(hdr, text="⬡ ComfyUI", font=(SANS, 22, "bold"), fg=ACCENT, bg=BG).pack(side="left")
-        tk.Label(hdr, text=" Launcher", font=(SANS, 22), fg=TEXT, bg=BG).pack(side="left")
+        self._hdr_a = tk.Label(hdr, text=T["title_a"][self.lang], font=(SANS, 22, "bold"), fg=ACCENT, bg=BG)
+        self._hdr_a.pack(side="left")
+        self._hdr_b = tk.Label(hdr, text=T["title_b"][self.lang], font=(SANS, 22), fg=TEXT, bg=BG)
+        self._hdr_b.pack(side="left")
 
         sf = tk.Frame(hdr, bg=BG)
         sf.pack(side="right")
         self._dot_lbl = tk.Label(sf, text="⬤", font=(SANS, 13), fg=TEXT_DIM, bg=BG)
         self._dot_lbl.pack(side="left")
-        self._status_lbl = tk.Label(sf, text=" Not running", font=(SANS, 10), fg=TEXT_DIM, bg=BG)
+        self._status_lbl = tk.Label(sf, text=T["st_not"][self.lang], font=(SANS, 10), fg=TEXT_DIM, bg=BG)
         self._status_lbl.pack(side="left")
+        self._btn_lang = self._make_btn(sf, T["lang"][self.lang], BORDER, self._toggle_lang, key="lang")
+        self._btn_lang.pack(side="left", padx=(12, 0))
 
         tk.Frame(self, bg=BORDER, height=1).pack(fill="x", padx=20, pady=(0, 8))
 
         btn_row = tk.Frame(self, bg=BG)
         btn_row.pack(fill="x", padx=20, pady=(0, 8))
 
-        self._btn_start = self._make_btn(btn_row, "▶  Start", ACCENT, self._start_comfy)
+        self._btn_start = self._make_btn(btn_row, T["btn_start"][self.lang], ACCENT, self._start_comfy, key="btn_start")
         self._btn_start.pack(side="left", padx=(0, 6))
-        self._btn_start_adv = self._make_btn(btn_row, "▶  No API", "#6e40c9", self._start_comfy_adv)
+        self._btn_start_adv = self._make_btn(btn_row, T["btn_noapi"][self.lang], "#6e40c9", self._start_comfy_adv, key="btn_noapi")
         self._btn_start_adv.pack(side="left", padx=(0, 12))
-        self._btn_stop = self._make_btn(btn_row, "■  Stop", RED, self._stop_comfy, disabled=True)
+        self._btn_stop = self._make_btn(btn_row, T["btn_stop"][self.lang], RED, self._stop_comfy, disabled=True, key="btn_stop")
         self._btn_stop.pack(side="left", padx=(0, 16))
 
-        self._btn_upd_comfy = self._make_btn(btn_row, "↑  ComfyUI", AMBER, self._update_comfyui)
+        self._btn_upd_comfy = self._make_btn(btn_row, T["btn_upd_comfy"][self.lang], AMBER, self._update_comfyui, key="btn_upd_comfy")
         self._btn_upd_comfy.pack(side="left", padx=(0, 6))
-        self._btn_upd_ext = self._make_btn(btn_row, "↑  Extensions", AMBER, self._update_extensions)
+        self._btn_upd_ext = self._make_btn(btn_row, T["btn_upd_ext"][self.lang], AMBER, self._update_extensions, key="btn_upd_ext")
         self._btn_upd_ext.pack(side="left", padx=(0, 6))
 
-        self._btn_browser = self._make_btn(btn_row, "🌐  Open UI", ACCENT2, self._open_browser, disabled=True)
+        self._btn_browser = self._make_btn(btn_row, T["btn_browser"][self.lang], ACCENT2, self._open_browser, disabled=True, key="btn_browser")
         self._btn_browser.pack(side="right")
 
         inst_frame = tk.Frame(self, bg=BG)
         inst_frame.pack(fill="x", padx=20, pady=(10, 0))
-        tk.Label(inst_frame, text="Install Extension (Git URL)", font=(SANS, 10, "bold"), fg=TEXT_DIM, bg=BG).pack(anchor="w")
+        self._inst_lbl = tk.Label(inst_frame, text=T["inst_label"][self.lang], font=(SANS, 10, "bold"), fg=TEXT_DIM, bg=BG)
+        self._inst_lbl.pack(anchor="w")
         row2 = tk.Frame(inst_frame, bg=BG)
         row2.pack(fill="x", pady=(5, 0))
         eb = tk.Frame(row2, bg=BORDER, padx=1, pady=1)
@@ -136,15 +227,16 @@ class ComfyLauncher(tk.Tk):
         self.repo_entry.bind("<FocusIn>", lambda e: eb.config(bg=ACCENT))
         self.repo_entry.bind("<FocusOut>", lambda e: eb.config(bg=BORDER))
         self.repo_entry.bind("<Return>", lambda e: self._install_extension())
-        self._btn_install = self._make_btn(row2, "⬇  Install", GREEN, self._install_extension)
+        self._btn_install = self._make_btn(row2, T["btn_install"][self.lang], GREEN, self._install_extension, key="btn_install")
         self._btn_install.pack(side="right")
 
         tk.Frame(self, bg=BORDER, height=1).pack(fill="x", padx=20, pady=(12, 0))
 
         log_hdr = tk.Frame(self, bg=BG)
         log_hdr.pack(fill="x", padx=20, pady=(6, 4))
-        tk.Label(log_hdr, text="OUTPUT LOG", font=(MONO, 9, "bold"), fg=TEXT_DIM, bg=BG).pack(side="left")
-        self._btn_clear = self._make_btn(log_hdr, "Clear", BORDER, self._clear_log)
+        self._log_title = tk.Label(log_hdr, text=T["log_title"][self.lang], font=(MONO, 9, "bold"), fg=TEXT_DIM, bg=BG)
+        self._log_title.pack(side="left")
+        self._btn_clear = self._make_btn(log_hdr, T["btn_clear"][self.lang], BORDER, self._clear_log, key="btn_clear")
         self._btn_clear.pack(side="right")
 
         log_wrap = tk.Frame(self, bg=BORDER)
@@ -158,7 +250,7 @@ class ComfyLauncher(tk.Tk):
         for t, c in [("info", ACCENT2), ("success", GREEN), ("error", RED), ("warn", AMBER), ("dim", TEXT_DIM), ("normal", TEXT)]:
             self._log_box.tag_config(t, foreground=c)
 
-    def _make_btn(self, p, t, c, cmd, disabled=False):
+    def _make_btn(self, p, t, c, cmd, disabled=False, key=None):
         b = tk.Label(
             p, text=t, font=(SANS, 10, "bold"),
             bg=c if not disabled else BORDER,
@@ -168,6 +260,9 @@ class ComfyLauncher(tk.Tk):
         )
         b._color = c
         b._disabled = disabled
+        b._key = key
+        if key:
+            self._text_btns.append((b, key))
 
         def click(e):
             if not b._disabled:
@@ -198,24 +293,40 @@ class ComfyLauncher(tk.Tk):
         self._set_btn_disabled(self._btn_start_adv, r)
         self._set_btn_disabled(self._btn_stop, not r)
         self._set_btn_disabled(self._btn_browser, not r)
+        self._is_running = r
+        if not r:
+            self._is_adv = False
         if r:
             self._dot_lbl.config(fg=GREEN)
-            self._status_lbl.config(fg=GREEN, text=" Running")
+            self._status_lbl.config(fg=GREEN, text=T["st_run_adv"][self.lang] if self._is_adv else T["st_run"][self.lang])
         else:
             self._dot_lbl.config(fg=TEXT_DIM)
-            self._status_lbl.config(fg=TEXT_DIM, text=" Not running")
+            self._status_lbl.config(fg=TEXT_DIM, text=T["st_not"][self.lang])
+
+    def _toggle_lang(self):
+        self.lang = "en" if self.lang == "zh" else "zh"
+        self._hdr_a.config(text=T["title_a"][self.lang])
+        self._hdr_b.config(text=T["title_b"][self.lang])
+        for b, k in self._text_btns:
+            b.config(text=T[k][self.lang])
+        self._inst_lbl.config(text=T["inst_label"][self.lang])
+        self._log_title.config(text=T["log_title"][self.lang])
+        if self._is_running:
+            self._status_lbl.config(text=T["st_run_adv"][self.lang] if self._is_adv else T["st_run"][self.lang])
+        else:
+            self._status_lbl.config(text=T["st_not"][self.lang])
 
     def _check_paths(self):
-        self._log("✦  ComfyUI Launcher is ready", "info")
-        for label, path in [
-            ("Launch script (standard)", RUN_BAT),
-            ("Launch script (disable API)", RUN_BAT_ADV),
-            ("Update script", UPDATE_BAT),
-            ("custom_nodes", NODES_DIR),
-            ("python_embeded", PYTHON_EXE),
+        self._log(T["ready"][self.lang], "info")
+        for key, path in [
+            ("ls_std", RUN_BAT),
+            ("ls_adv", RUN_BAT_ADV),
+            ("up_bat", UPDATE_BAT),
+            ("cn_dir", NODES_DIR),
+            ("py_dir", PYTHON_EXE),
         ]:
             self._log(
-                f"  {'✔' if os.path.exists(path) else '⚠'}  {label}",
+                f"  {'✔' if os.path.exists(path) else '⚠'}  {T[key][self.lang]}",
                 "success" if os.path.exists(path) else "warn",
             )
 
@@ -272,6 +383,7 @@ class ComfyLauncher(tk.Tk):
         env = os.environ.copy()
         env["PYTHONUTF8"] = "1"           # Python 3.7+ UTF-8 mode
         env["PYTHONIOENCODING"] = "utf-8"  # Compatibility with older versions
+        env["COMFY_LAUNCHER"] = "1"        # launch bat detects this and skips its own explorer step
         return subprocess.Popen(
             args,
             cwd=cwd,
@@ -300,41 +412,41 @@ class ComfyLauncher(tk.Tk):
 
     def _start_comfy(self):
         if (self._comfy_proc and self._comfy_proc.poll() is None) or self._find_pid_on_port(8188):
-            return self._log("Already running (port 8188 is in use)", "warn")
+            return self._log(T["already_running"][self.lang], "warn")
         if not os.path.exists(RUN_BAT):
-            return self._log(f"Launch script not found: {RUN_BAT}", "error")
+            return self._log(T["not_found"][self.lang].format(path=RUN_BAT), "error")
         self._auto_open_done = False
-        self._log("▶  Starting ComfyUI …", "info")
+        self._is_adv = False
+        self._log(T["starting"][self.lang], "info")
         try:
             self._comfy_proc = self._start_process(
                 ["cmd", "/c", RUN_BAT],
                 os.path.dirname(RUN_BAT),
             )
             self._set_running(True)
-            self._status_lbl.config(text=" Running")
             threading.Thread(target=self._stream_output, args=(self._comfy_proc,), daemon=True).start()
             threading.Thread(target=self._auto_open_browser_when_ready, daemon=True).start()
         except Exception as e:
-            self._log(f"Failed to start: {e}", "error")
+            self._log(T["start_fail"][self.lang].format(e=e), "error")
 
     def _start_comfy_adv(self):
         if (self._comfy_proc and self._comfy_proc.poll() is None) or self._find_pid_on_port(8188):
-            return self._log("Already running (port 8188 is in use)", "warn")
+            return self._log(T["already_running"][self.lang], "warn")
         if not os.path.exists(RUN_BAT_ADV):
-            return self._log(f"Launch script not found: {RUN_BAT_ADV}", "error")
+            return self._log(T["not_found"][self.lang].format(path=RUN_BAT_ADV), "error")
         self._auto_open_done = False
-        self._log("▶  Starting with API nodes disabled …", "info")
+        self._is_adv = True
+        self._log(T["starting_adv"][self.lang], "info")
         try:
             self._comfy_proc = self._start_process(
                 ["cmd", "/c", RUN_BAT_ADV],
                 os.path.dirname(RUN_BAT_ADV),
             )
             self._set_running(True)
-            self._status_lbl.config(text=" Running (API disabled)")
             threading.Thread(target=self._stream_output, args=(self._comfy_proc,), daemon=True).start()
             threading.Thread(target=self._auto_open_browser_when_ready, daemon=True).start()
         except Exception as e:
-            self._log(f"Failed to start: {e}", "error")
+            self._log(T["start_fail"][self.lang].format(e=e), "error")
 
     # ANSI escape sequence regex (filter terminal color/control characters)
     _ANSI_RE = re.compile(r"(?:\x1b|\033)\[[0-9;]*[A-Za-z]")
@@ -368,39 +480,48 @@ class ComfyLauncher(tk.Tk):
                 )
                 self.after(0, self._log, line, level)
         except Exception as e:
-            self.after(0, self._log, f"Log read error: {e}", "error")
+            self.after(0, self._log, T["stream_err"][self.lang].format(e=e), "error")
         finally:
             self.after(0, self._on_comfy_exit)
 
     def _auto_open_browser_when_ready(self):
-        # Note: run_nvidia_gpu.bat / run_nvidia_gpu_disable_api_nodes.bat
-        # themselves open the browser via explorer when the port is ready.
-        # We do not open again here to avoid duplicate windows/tabs; only log readiness.
+        # Open the browser from the launcher itself once port 8188 accepts
+        # connections. Relying on the bat's own "explorer URL" step is not
+        # reliable under the launcher (hidden console, redirected stdio): in
+        # that mode the bat process is already gone before explorer's request
+        # reaches the shell, so no browser tab is opened. The bats detect
+        # COMFY_LAUNCHER=1 and skip their own explorer step, so there is no
+        # duplicate tab; double-clicking a bat directly still opens the browser.
         if self._wait_for_port_and_open():
             if not self._auto_open_done:
                 self._auto_open_done = True
-                self.after(0, self._log, "🌐  ComfyUI is ready (browser opened by launch script)", "info")
+                try:
+                    webbrowser.open("http://127.0.0.1:8188")
+                    self.after(0, self._log, T["ready_opened"][self.lang], "info")
+                except Exception:
+                    subprocess.call(["explorer", "http://127.0.0.1:8188"],
+                                    creationflags=subprocess.CREATE_NO_WINDOW)
+                    self.after(0, self._log, T["ready_explorer"][self.lang], "info")
         else:
-            self.after(0, self._log, "⚠  Timed out waiting for ComfyUI to start", "warn")
+            self.after(0, self._log, T["timeout"][self.lang], "warn")
 
     def _on_comfy_exit(self):
-        self._log("■  ComfyUI process has exited", "warn")
+        self._log(T["exited"][self.lang], "warn")
         self._set_running(False)
-        self._status_lbl.config(text=" Not running")
         self._auto_open_done = False
 
-    def _stop_comfy(self):
+    def _stop_comfy(self, confirm=True):
         cmd_alive = self._comfy_proc and self._comfy_proc.poll() is None
         port_pid = self._find_pid_on_port(8188)
         if not cmd_alive and not port_pid:
             self._set_running(False)
             return
-        if not messagebox.askyesno(
-            "Confirm Stop",
-            "ComfyUI is running. Are you sure you want to stop it?\n\nThis will interrupt ComfyUI.",
+        if confirm and not messagebox.askyesno(
+            T["confirm_stop_title"][self.lang],
+            T["confirm_stop_text"][self.lang],
         ):
             return
-        self._log("■  Stopping ComfyUI …", "warn")
+        self._log(T["stopping"][self.lang], "warn")
         # First try to kill the process we hold directly (bat's cmd.exe, if still alive)
         if self._comfy_proc:
             try:
@@ -422,17 +543,17 @@ class ComfyLauncher(tk.Tk):
             except:
                 pass
         self._set_running(False)
-        self._log("■  Stopped", "info")
+        self._log(T["stopped"][self.lang], "info")
 
     def _open_browser(self):
         webbrowser.open("http://127.0.0.1:8188")
-        self._log("🌐  Opened UI", "info")
+        self._log(T["opened_ui"][self.lang], "info")
 
     def _update_comfyui(self):
         if not os.path.exists(UPDATE_BAT):
-            return self._log("Update script not found", "error")
+            return self._log(T["upd_not"][self.lang], "error")
         self._set_btn_disabled(self._btn_upd_comfy, True)
-        self._log("↑  Updating ComfyUI …", "info")
+        self._log(T["updating_comfy"][self.lang], "info")
 
         def _do():
             try:
@@ -453,11 +574,11 @@ class ComfyLauncher(tk.Tk):
                 p.wait()
                 self.after(
                     0, self._log,
-                    "✔ Update complete" if p.returncode == 0 else f"✘ Update failed {p.returncode}",
+                    T["upd_done"][self.lang] if p.returncode == 0 else T["upd_fail"][self.lang].format(code=p.returncode),
                     "success" if p.returncode == 0 else "error",
                 )
             except Exception as e:
-                self.after(0, self._log, f"Update error: {e}", "error")
+                self.after(0, self._log, T["upd_err"][self.lang].format(e=e), "error")
             finally:
                 self.after(0, self._set_btn_disabled, self._btn_upd_comfy, False)
 
@@ -465,7 +586,7 @@ class ComfyLauncher(tk.Tk):
 
     def _update_extensions(self):
         if not os.path.isdir(NODES_DIR):
-            return self._log("custom_nodes directory not found", "error")
+            return self._log(T["no_nodes"][self.lang], "error")
         repos = [
             (n, os.path.join(NODES_DIR, n))
             for n in sorted(os.listdir(NODES_DIR))
@@ -473,11 +594,11 @@ class ComfyLauncher(tk.Tk):
             and os.path.isdir(os.path.join(NODES_DIR, n, ".git"))
         ]
         if not repos:
-            return self._log("No git extensions found", "warn")
+            return self._log(T["no_git_ext"][self.lang], "warn")
 
         self._set_btn_disabled(self._btn_upd_ext, True)
         self._set_btn_disabled(self._btn_upd_comfy, True)
-        self._log(f"↑ Checking {len(repos)} extensions in parallel…", "info")
+        self._log(T["checking_ext"][self.lang].format(n=len(repos)), "info")
 
         def _git(args, cwd):
             try:
@@ -507,20 +628,20 @@ class ComfyLauncher(tk.Tk):
                     if needs_update:
                         outdated.append((name, path))
                     else:
-                        self.after(0, self._log, f"  ✔ {name} is up to date", "dim")
+                        self.after(0, self._log, T["uptodate"][self.lang].format(name=name), "dim")
 
             if outdated:
-                self.after(0, self._log, f"↓ Updating {len(outdated)} extension(s)…", "info")
+                self.after(0, self._log, T["updating_ext"][self.lang].format(n=len(outdated)), "info")
                 for name, path in outdated:
                     self.after(0, self._log, f"  → {name}", "dim")
                     code, _ = _git(["pull", "--ff-only"], path)
                     self.after(
                         0, self._log,
-                        f"     {'✔' if code == 0 else '✘'} {name}",
+                        (T["ext_ok"] if code == 0 else T["ext_fail"])[self.lang].format(name=name),
                         "success" if code == 0 else "error",
                     )
             else:
-                self.after(0, self._log, "✔ All extensions are up to date", "success")
+                self.after(0, self._log, T["all_uptodate"][self.lang], "success")
 
             self.after(0, self._set_btn_disabled, self._btn_upd_ext, False)
             self.after(0, self._set_btn_disabled, self._btn_upd_comfy, False)
@@ -530,13 +651,13 @@ class ComfyLauncher(tk.Tk):
     def _install_extension(self):
         url = self.repo_entry.get().strip()
         if not url:
-            return self._log("Please enter a Git URL", "warn")
+            return self._log(T["enter_url"][self.lang], "warn")
         name = url.rstrip("/").split("/")[-1].replace(".git", "")
         target = os.path.join(NODES_DIR, name)
         if os.path.exists(target):
-            return self._log("Directory already exists", "warn")
+            return self._log(T["dir_exists"][self.lang], "warn")
         self._set_btn_disabled(self._btn_install, True)
-        self._log(f"⬇ Installing {name} …", "info")
+        self._log(T["installing"][self.lang].format(name=name), "info")
 
         def _do():
             try:
@@ -551,16 +672,16 @@ class ComfyLauncher(tk.Tk):
                         self.after(0, self._log, f"   {l.strip()}", "dim")
                 p.wait()
                 if p.returncode == 0:
-                    self.after(0, self._log, f"✔ Installed successfully: {name}", "success")
+                    self.after(0, self._log, T["installed"][self.lang].format(name=name), "success")
                     req = os.path.join(target, "requirements.txt")
                     if os.path.exists(req):
                         self.after(0, lambda t=target: self._pip_install(t))
                 else:
-                    self.after(0, self._log, "✘ Install failed", "error")
+                    self.after(0, self._log, T["install_failed"][self.lang], "error")
             except FileNotFoundError:
-                self.after(0, self._log, "✘ git not found", "error")
+                self.after(0, self._log, T["git_missing"][self.lang], "error")
             except Exception as e:
-                self.after(0, self._log, f"Error: {e}", "error")
+                self.after(0, self._log, T["err"][self.lang].format(e=e), "error")
             finally:
                 self.after(0, self._set_btn_disabled, self._btn_install, False)
 
@@ -588,13 +709,13 @@ class ComfyLauncher(tk.Tk):
         threading.Thread(target=_do, daemon=True).start()
 
     def _on_close(self):
-        if self._comfy_proc and self._comfy_proc.poll() is None:
+        if self._is_running:
             if not messagebox.askyesno(
-                "Confirm Exit",
-                "ComfyUI is running. Are you sure you want to stop it and exit?\n\nThis will interrupt ComfyUI.",
+                T["confirm_exit_title"][self.lang],
+                T["confirm_exit_text"][self.lang],
             ):
                 return
-            self._stop_comfy()
+            self._stop_comfy(confirm=False)
             time.sleep(0.5)
         self.destroy()
 
