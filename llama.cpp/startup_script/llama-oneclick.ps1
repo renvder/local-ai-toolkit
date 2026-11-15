@@ -5,11 +5,27 @@
 #    1. Detect Windows architecture + GPU + NVIDIA driver/CUDA capability.
 #    2. Select the best official llama.cpp Windows backend.
 #    3. Download the latest stable release directly from ggml-org/llama.cpp.
+#       Downloads use curl.exe (built into Windows 11) with 16 parallel
+#       Range requests per file, so a single slow connection cannot cap
+#       the whole download the way Invoke-WebRequest does. If curl.exe is
+#       missing, or a server refuses Range requests, it falls back to a
+#       single-threaded Invoke-WebRequest download.
 #    4. Install it under THIS SCRIPT'S directory (portable; no winget/CUDA toolkit required).
 #
 #  Later runs:
 #    - Reuse the locally installed runtime when it matches the detected hardware.
 #    - If the PC/backend changes, automatically install the appropriate runtime.
+#
+#  Updating (separate, manual step; launching never checks for updates):
+#    - Double-click update.bat, or run: powershell -File llama-oneclick.ps1 -UpdateOnly
+#    - It compares the installed release (runtime\<backend>\runtime-info.json)
+#      with the newest official release for the detected backend.
+#    - Already up to date -> nothing is downloaded, it just exits.
+#    - Newer online -> downloads to a temp folder, verifies SHA-256, extracts
+#      to a staging folder, then swaps it in. The old runtime is kept as a
+#      backup until the new one is in place, so a failed download never
+#      leaves you with no runtime. Offline / API failure -> skip, keep local.
+#    - start.bat also creates update.bat in the package root if it is missing.
 #
 #  Backends:
 #    NVIDIA + driver >= 580  -> CUDA 13
@@ -17,8 +33,19 @@
 #    AMD / Intel             -> Vulkan
 #    Otherwise               -> CPU
 #
+#  presets.ini: if the file does not exist, the launcher generates it once
+#  (at first install / after an update / on the next launch) from the
+#  detected hardware and the models in models\, then never touches it
+#  again. Per-model ctx-size is a fixed number measured by llama.cpp's
+#  own llama-fit-params tool for this GPU + model, with the mmproj file
+#  size added to the fit reserve (auto-fit does NOT count mmproj VRAM).
+#  Launching never recalculates it: a ctx-size written in presets.ini
+#  is explicit, so --fit leaves it alone. Edit the file freely afterwards.
+#
 #  The script keeps the existing model/router/VRAM/preset logic below.
 # =====================================================================
+
+param([switch]$UpdateOnly)
 
 $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -99,6 +126,18 @@ if ($vendor -eq "cpu") {
 }
 
 $ramGB = [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 1)
+# Virtual memory (RAM + pagefile). Pagefile is only a safety net: it is
+# never used to size ctx, because a model spilling to disk is too slow
+# to count as usable. It is shown here and used only as a guardrail
+# (warn when even RAM + pagefile cannot hold a model).
+$pageGB = 0
+try {
+    $osInfo = Get-CimInstance Win32_OperatingSystem -ErrorAction SilentlyContinue
+    if ($osInfo -and $osInfo.TotalVirtualMemorySize -and $osInfo.TotalVisibleMemorySize) {
+        $pageGB = [math]::Round(($osInfo.TotalVirtualMemorySize - $osInfo.TotalVisibleMemorySize) / 1MB, 1)
+        if ($pageGB -lt 0) { $pageGB = 0 }
+    }
+} catch { }
 $cores = (Get-CimInstance Win32_Processor | Measure-Object -Property NumberOfCores -Sum).Sum
 if (-not $cores) { $cores = [Environment]::ProcessorCount / 2 }
 $threads = [math]::Max(4, [math]::Min($cores, 16))
@@ -131,6 +170,7 @@ Say ""
 Say "  GPU          : $gpuName" White
 Say "  VRAM         : $(if ($vramGB -gt 0) { "$vramGB GB" } else { "-" })" White
 Say "  RAM          : $ramGB GB" White
+if ($pageGB -gt 0) { Say "  Virtual mem  : $([math]::Round($ramGB + $pageGB, 1)) GB (RAM $ramGB GB + pagefile $pageGB GB)" White }
 Say "  CPU cores    : $cores" White
 if ($driverVersion) { Say "  NVIDIA driver: $driverVersion (nvidia-smi CUDA $cudaReported)" White }
 Say "  Selected     : $backendLabel" Green
@@ -152,6 +192,73 @@ function Get-LocalRuntime {
     $rootExe = Join-Path $ROOT "llama-server.exe"
     if (Test-Path $rootExe) { return $rootExe }
     return $null
+}
+
+function Get-TagNumber($tag) {
+    if ($tag -match '^b(\d+)$') { return [int]$Matches[1] }
+    return $null
+}
+
+function Get-LocalReleaseTag($ExePath) {
+    $candidates = @()
+    $candidates += (Join-Path (Join-Path $RUNTIME_DIR $backend) "runtime-info.json")
+    if ($ExePath) { $candidates += (Join-Path (Split-Path $ExePath -Parent) "runtime-info.json") }
+    foreach ($f in $candidates) {
+        if (Test-Path $f) {
+            try {
+                $info = Get-Content $f -Raw -Encoding UTF8 | ConvertFrom-Json
+                if ($info.release) { return [string]$info.release }
+            } catch { }
+        }
+    }
+    return $null
+}
+
+function Get-LatestReleaseForBackend($Backend) {
+    switch ($Backend) {
+        "cuda13" {
+            $mainPattern = '^llama-.*-bin-win-cuda-13\.\d+-x64\.zip$'
+            $cudartPattern = '^cudart-llama-bin-win-cuda-13\.\d+-x64\.zip$'
+        }
+        "cuda12" {
+            $mainPattern = '^llama-.*-bin-win-cuda-12\.\d+-x64\.zip$'
+            $cudartPattern = '^cudart-llama-bin-win-cuda-12\.\d+-x64\.zip$'
+        }
+        "vulkan" { $mainPattern = '^llama-.*-bin-win-vulkan-x64\.zip$' }
+        default   { $mainPattern = '^llama-.*-bin-win-cpu-x64\.zip$' }
+    }
+    # Do not assume /releases/latest contains binaries. Since v0.5.0 the
+    # newest stable release can point to a nightly build while carrying only
+    # a marker asset. Search the official release list for the newest release
+    # that actually contains the backend we need.
+    $releases = Get-ReleasesWithAssets
+    foreach ($r in ($releases | Where-Object { -not $_.draft } | Sort-Object { [datetime]$_.published_at } -Descending)) {
+        $assets = @($r.assets)
+        $candidate = Find-Asset $assets $mainPattern
+        if (-not $candidate) { continue }
+        $candidateCudart = $null
+        if ($Backend -eq "cuda13" -or $Backend -eq "cuda12") {
+            $candidateCudart = Find-Asset $assets $cudartPattern
+            if (-not $candidateCudart) { continue }
+        }
+        return @{ Release = $r; Main = $candidate; Cudart = $candidateCudart; Tag = $r.tag_name }
+    }
+    return $null
+}
+
+function Ensure-UpdateLauncher {
+    $bat = Join-Path $ROOT "update.bat"
+    if (Test-Path $bat) { return }
+    $lines = @(
+        '@echo off',
+        'chcp 65001 >nul',
+        'cd /d "%~dp0"',
+        '',
+        'rem Update the installed llama.cpp runtime to the latest release, then exit.',
+        'rem It does not start the server.',
+        '"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "%~dp0llama-oneclick.ps1" -UpdateOnly'
+    )
+    $lines | Set-Content -Path $bat -Encoding ASCII
 }
 
 function Get-ReleasesWithAssets {
@@ -181,57 +288,191 @@ function Test-AssetHash($asset, $path) {
     }
 }
 
+
+# ---------------------------------------------------------------------
+# Parallel download (curl.exe, built into Windows 11)
+#   Why: a single Invoke-WebRequest connection to GitHub Release assets
+#   is often capped at ~100-200 KB/s from China, while the broadband
+#   itself is idle. IDM proves the point: 32 connections saturate it.
+#   Each file is split into 16 Range chunks, downloaded by 16 separate
+#   curl.exe processes in parallel, then merged in order. The two files
+#   (main + cudart) run at the same time, so 32 connections in total.
+#   Verified: curl -K config files do NOT work for this -- the `range`
+#   option leaks across transfers in --parallel mode, so every chunk
+#   downloads the same (last) range. Separate curl.exe processes, each
+#   with its own --range argument, download the correct bytes (checked
+#   against the official SHA-256 of b12282).
+#   Fallback: no curl.exe, unknown file size, or a chunk that keeps
+#   failing -> the caller falls back to Invoke-WebRequest.
+# ---------------------------------------------------------------------
+function Get-CurlExe {
+    $cmd = Get-Command curl.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($cmd -and $cmd.Source) { return $cmd.Source }
+    $cmd = Get-Command curl -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($cmd -and $cmd.Source) { return $cmd.Source }
+    if ($env:SystemRoot) {
+        $sysCurl = Join-Path $env:SystemRoot "System32\curl.exe"
+        if (Test-Path $sysCurl) { return $sysCurl }
+    }
+    return $null
+}
+
+function Start-CurlChunk($curl, $url, $start, $end, $outFile) {
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $curl
+    $psi.Arguments = '-sL --fail --retry 3 --retry-delay 2 -o "' + $outFile + '" --range "' + $start + '-' + $end + '" "' + $url + '"'
+    $psi.UseShellExecute = $false
+    $psi.CreateNoWindow = $true
+    $psi.RedirectStandardOutput = $false
+    $psi.RedirectStandardError = $false
+    $proc = New-Object System.Diagnostics.Process
+    $proc.StartInfo = $psi
+    [void]$proc.Start()
+    return $proc
+}
+
+function Invoke-CurlChunkOnce($curl, $url, $start, $end, $outFile) {
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $curl
+    $psi.Arguments = '-sL --fail --retry 3 --retry-delay 2 -o "' + $outFile + '" --range "' + $start + '-' + $end + '" "' + $url + '"'
+    $psi.UseShellExecute = $false
+    $psi.CreateNoWindow = $true
+    $psi.RedirectStandardOutput = $false
+    $psi.RedirectStandardError = $false
+    $proc = New-Object System.Diagnostics.Process
+    $proc.StartInfo = $psi
+    [void]$proc.Start()
+    $proc.WaitForExit()
+    $code = $proc.ExitCode
+    $proc.Close()
+    return $code
+}
+
+function Merge-Chunks($chunks, $outFile) {
+    $outStream = [System.IO.File]::Create($outFile)
+    try {
+        foreach ($c in $chunks) {
+            $inStream = [System.IO.File]::OpenRead($c.Path)
+            try { $inStream.CopyTo($outStream) } finally { $inStream.Close() }
+        }
+    } finally { $outStream.Close() }
+}
+
+# Downloads every file in $downloads in parallel: 16 Range chunks per
+# file, all files at once (16 + 16 = 32 connections when cudart exists).
+# $downloads is an array of @{ Asset = <GitHub asset>; OutFile = <path> }.
+# Returns $true on success, $false if parallel download is not possible
+# (no curl.exe / unknown size / tiny file) so the caller can fall back.
+# Throws if a chunk keeps failing after retries.
+function Invoke-ParallelDownloads($downloads, $curl) {
+    foreach ($d in $downloads) {
+        if (-not $d.Asset.size -or [long]$d.Asset.size -lt 20MB) { return $false }
+    }
+    $threadsPerFile = 16
+    $plans = @()
+    foreach ($d in $downloads) {
+        $totalSize = [long]$d.Asset.size
+        $chunkSize = [Math]::Ceiling($totalSize / $threadsPerFile)
+        $chunkDir = $d.OutFile + ".parts"
+        if (Test-Path $chunkDir) { Remove-Item $chunkDir -Recurse -Force }
+        New-Item -ItemType Directory -Path $chunkDir | Out-Null
+        $chunks = @()
+        for ($i = 0; $i -lt $threadsPerFile; $i++) {
+            $start = $i * $chunkSize
+            if ($start -ge $totalSize) { break }
+            $end = [Math]::Min($start + $chunkSize - 1, $totalSize - 1)
+            $chunks += @{ Index = $i; Start = $start; End = $end; ExpectedSize = ($end - $start + 1); Path = (Join-Path $chunkDir ("part{0:D2}" -f $i)) }
+        }
+        $plans += @{ Asset = $d.Asset; OutFile = $d.OutFile; TotalSize = $totalSize; ChunkDir = $chunkDir; Chunks = $chunks; Procs = @() }
+    }
+    try {
+        foreach ($plan in $plans) {
+            foreach ($c in $plan.Chunks) {
+                $plan.Procs += (Start-CurlChunk $curl $plan.Asset.browser_download_url $c.Start $c.End $c.Path)
+            }
+        }
+        # Progress: curl runs with -s, so it prints nothing. Poll the chunk
+        # files every 500 ms and show one progress bar: total MB, percent,
+        # current speed and ETA. This is only a display; the downloads run
+        # in the curl processes above.
+        $totalBytes = 0
+        foreach ($plan in $plans) { $totalBytes += $plan.TotalSize }
+        $sw = [System.Diagnostics.Stopwatch]::StartNew()
+        $allDone = $false
+        while (-not $allDone) {
+            $allDone = $true
+            foreach ($plan in $plans) {
+                foreach ($proc in $plan.Procs) {
+                    if (-not $proc.HasExited) { $allDone = $false }
+                }
+            }
+            $doneBytes = 0
+            foreach ($plan in $plans) {
+                foreach ($c in $plan.Chunks) {
+                    if (Test-Path $c.Path) { $doneBytes += (Get-Item $c.Path).Length }
+                }
+            }
+            $elapsed = $sw.Elapsed.TotalSeconds
+            if ($elapsed -lt 1) { $elapsed = 1 }
+            $speedMB = ($doneBytes / 1MB) / $elapsed
+            $pct = 0
+            if ($totalBytes -gt 0) { $pct = [Math]::Min(100, [int](($doneBytes * 100) / $totalBytes)) }
+            $eta = ""
+            if ($speedMB -gt 0 -and $doneBytes -lt $totalBytes) {
+                $etaSec = [int]((($totalBytes - $doneBytes) / 1MB) / $speedMB)
+                $eta = " ETA ${etaSec}s"
+            }
+            $status = ("{0:N1} / {1:N1} MB ({2}%)  {3:N2} MB/s{4}" -f ($doneBytes / 1MB), ($totalBytes / 1MB), $pct, $speedMB, $eta)
+            Write-Progress -Activity "Downloading llama.cpp" -Status $status -PercentComplete $pct
+            if (-not $allDone) { Start-Sleep -Milliseconds 500 }
+        }
+        Write-Progress -Activity "Downloading llama.cpp" -Completed
+        Say ("  Downloaded {0:N1} MB in {1:N1}s ({2:N2} MB/s)" -f ($totalBytes / 1MB), $sw.Elapsed.TotalSeconds, (($totalBytes / 1MB) / $sw.Elapsed.TotalSeconds)) Green
+        foreach ($plan in $plans) {
+            for ($i = 0; $i -lt $plan.Chunks.Count; $i++) {
+                $c = $plan.Chunks[$i]
+                $proc = $plan.Procs[$i]
+                $code = $proc.ExitCode
+                $proc.Close()
+                $ok = ($code -eq 0) -and (Test-Path $c.Path) -and ((Get-Item $c.Path).Length -eq $c.ExpectedSize)
+                $tries = 0
+                while (-not $ok -and $tries -lt 2) {
+                    $tries++
+                    $code = Invoke-CurlChunkOnce $curl $plan.Asset.browser_download_url $c.Start $c.End $c.Path
+                    $ok = ($code -eq 0) -and (Test-Path $c.Path) -and ((Get-Item $c.Path).Length -eq $c.ExpectedSize)
+                }
+                if (-not $ok) { throw "Parallel download failed for $($plan.Asset.name) part $($c.Index) (chunk $($c.Start)-$($c.End))." }
+            }
+            Merge-Chunks $plan.Chunks $plan.OutFile
+            if ((Get-Item $plan.OutFile).Length -ne $plan.TotalSize) { throw "Parallel download of $($plan.Asset.name) finished, but the merged size is wrong." }
+        }
+        return $true
+    } finally {
+        foreach ($plan in $plans) {
+            if (Test-Path $plan.ChunkDir) { Remove-Item $plan.ChunkDir -Recurse -Force -ErrorAction SilentlyContinue }
+        }
+    }
+}
+
 function Install-PortableRuntime {
+    param([switch]$IsUpdate)
     if (-not (Test-Path $RUNTIME_DIR)) { New-Item -ItemType Directory -Path $RUNTIME_DIR | Out-Null }
 
     Say ""
-    Say "  No suitable local llama.cpp runtime found." Yellow
+    if (-not $IsUpdate) {
+        Say "  No suitable local llama.cpp runtime found." Yellow
+    }
     Say "  Selecting the official Windows x64 build for: $backendLabel" Yellow
     Say "  Downloading from ggml-org/llama.cpp ..." Cyan
 
-    # Do not assume /releases/latest contains binaries.  Since v0.5.0 the
-    # newest stable release can point to a nightly build while carrying only
-    # a marker asset.  Search the official release list for the newest release
-    # that actually contains the backend we need.
-    $releases = Get-ReleasesWithAssets
-    $main = $null
-    $cudart = $null
-    $release = $null
-
-    switch ($backend) {
-        "cuda13" {
-            $mainPattern = '^llama-.*-bin-win-cuda-13\.\d+-x64\.zip$'
-            $cudartPattern = '^cudart-llama-bin-win-cuda-13\.\d+-x64\.zip$'
-        }
-        "cuda12" {
-            $mainPattern = '^llama-.*-bin-win-cuda-12\.\d+-x64\.zip$'
-            $cudartPattern = '^cudart-llama-bin-win-cuda-12\.\d+-x64\.zip$'
-        }
-        "vulkan" { $mainPattern = '^llama-.*-bin-win-vulkan-x64\.zip$' }
-        default   { $mainPattern = '^llama-.*-bin-win-cpu-x64\.zip$' }
-    }
-
-    foreach ($r in ($releases | Where-Object { -not $_.draft } | Sort-Object { [datetime]$_.published_at } -Descending)) {
-        $assets = @($r.assets)
-        $candidate = Find-Asset $assets $mainPattern
-        if (-not $candidate) { continue }
-
-        if ($backend -eq "cuda13" -or $backend -eq "cuda12") {
-            $candidateCudart = Find-Asset $assets $cudartPattern
-            if (-not $candidateCudart) { continue }
-            $cudart = $candidateCudart
-        }
-
-        $release = $r
-        $main = $candidate
-        break
-    }
-
-    if (-not $release -or -not $main) {
+    $latest = Get-LatestReleaseForBackend $backend
+    if (-not $latest -or -not $latest.Main) {
         throw "No official Windows x64 build for $backend was found in the latest 100 llama.cpp releases."
     }
-
-    $tag = $release.tag_name
+    $release = $latest.Release
+    $main = $latest.Main
+    $cudart = $latest.Cudart
+    $tag = $latest.Tag
 
     $target = Join-Path $RUNTIME_DIR $backend
     $temp = Join-Path $env:TEMP ("llama-cpp-portable-" + [guid]::NewGuid().ToString("N"))
@@ -241,33 +482,51 @@ function Install-PortableRuntime {
         $mainZip = Join-Path $temp $main.name
         Say "  Release      : $tag" White
         Say "  Binary       : $($main.name)" White
-        Invoke-WebRequest -Uri $main.browser_download_url -OutFile $mainZip -UseBasicParsing
-        Test-AssetHash $main $mainZip
-
         $allZips = @($mainZip)
         if ($cudart) {
             $cudaZip = Join-Path $temp $cudart.name
             Say "  CUDA runtime : $($cudart.name)" White
-            Invoke-WebRequest -Uri $cudart.browser_download_url -OutFile $cudaZip -UseBasicParsing
-            Test-AssetHash $cudart $cudaZip
             $allZips += $cudaZip
         }
+        $parallelOk = $false
+        $curl = Get-CurlExe
+        if ($curl) {
+            Say "  Downloading with 32 connections (16 per file) ..." Cyan
+            $downloads = @(@{ Asset = $main; OutFile = $mainZip })
+            if ($cudart) { $downloads += @{ Asset = $cudart; OutFile = $cudaZip } }
+            try { $parallelOk = Invoke-ParallelDownloads $downloads $curl }
+            catch {
+                Say "  Parallel download failed ($($_.Exception.Message)) Falling back to single-threaded download." Yellow
+                $parallelOk = $false
+            }
+        }
+        if (-not $parallelOk) {
+            Say "  Downloading single-threaded ..." Cyan
+            Invoke-WebRequest -Uri $main.browser_download_url -OutFile $mainZip -UseBasicParsing
+            if ($cudart) { Invoke-WebRequest -Uri $cudart.browser_download_url -OutFile $cudaZip -UseBasicParsing }
+        }
+        Test-AssetHash $main $mainZip
+        if ($cudart) { Test-AssetHash $cudart $cudaZip }
 
-        if (Test-Path $target) { Remove-Item $target -Recurse -Force }
-        New-Item -ItemType Directory -Path $target | Out-Null
+        # Safe replace: extract to a staging folder inside $temp first, verify
+        # the new build, and only then swap it in. The old runtime is moved
+        # aside as a backup until the swap succeeds, so a failed download or
+        # extraction never leaves you with no runtime.
+        $staging = Join-Path $temp "extracted"
+        New-Item -ItemType Directory -Path $staging | Out-Null
 
         foreach ($z in $allZips) {
-            Expand-Archive -Path $z -DestinationPath $target -Force
+            Expand-Archive -Path $z -DestinationPath $staging -Force
         }
 
         # Some releases put binaries in a nested directory. Flatten one level when needed.
-        $found = Get-ChildItem $target -Recurse -Filter "llama-server.exe" -File | Select-Object -First 1
+        $found = Get-ChildItem $staging -Recurse -Filter "llama-server.exe" -File | Select-Object -First 1
         if (-not $found) { throw "Download completed, but llama-server.exe was not found after extraction." }
 
-        # If nested, move the extracted contents to the backend root.
-        if ($found.Directory.FullName -ne $target) {
+        # If nested, move the extracted contents to the staging root.
+        if ($found.Directory.FullName -ne $staging) {
             $nested = $found.Directory.FullName
-            Get-ChildItem $nested -Force | Move-Item -Destination $target -Force
+            Get-ChildItem $nested -Force | Move-Item -Destination $staging -Force
             if (Test-Path $nested) { Remove-Item $nested -Recurse -Force -ErrorAction SilentlyContinue }
         }
 
@@ -279,7 +538,29 @@ function Install-PortableRuntime {
             cuda_runtime_asset = if ($cudart) { $cudart.name } else { $null }
             installed_at = (Get-Date).ToString("o")
         }
-        $info | ConvertTo-Json | Set-Content -Path (Join-Path $target "runtime-info.json") -Encoding UTF8
+        $info | ConvertTo-Json | Set-Content -Path (Join-Path $staging "runtime-info.json") -Encoding UTF8
+
+        # Copy (not Move) the staging folder into place: $staging lives
+        # under $env:TEMP, $target may be on another drive, and Move-Item
+        # across volumes is not reliable in Windows PowerShell 5.1.
+        # Copy-Item works across drives. $temp is cleaned up by the
+        # finally block below, so the staging folder does not linger.
+        $backup = $null
+        if (Test-Path $target) {
+            $backup = "$target.old"
+            if (Test-Path $backup) { Remove-Item $backup -Recurse -Force }
+            Move-Item $target $backup
+        }
+        try {
+            New-Item -ItemType Directory -Path $target | Out-Null
+            Copy-Item (Join-Path $staging "*") $target -Recurse -Force
+            if (-not (Test-Path (Join-Path $target "llama-server.exe"))) { throw "Copy to $target completed, but llama-server.exe was not found." }
+        } catch {
+            if (Test-Path $target) { Remove-Item $target -Recurse -Force -ErrorAction SilentlyContinue }
+            if ($backup -and (Test-Path $backup)) { Move-Item $backup $target -ErrorAction SilentlyContinue }
+            throw
+        }
+        if ($backup -and (Test-Path $backup)) { Remove-Item $backup -Recurse -Force -ErrorAction SilentlyContinue }
         return (Join-Path $target "llama-server.exe")
     } finally {
         if (Test-Path $temp) { Remove-Item $temp -Recurse -Force -ErrorAction SilentlyContinue }
@@ -287,6 +568,80 @@ function Install-PortableRuntime {
 }
 
 $exe = Get-LocalRuntime
+
+# ---------------------------------------------------------------------
+# 2b. Update-only mode (update.bat / -UpdateOnly)
+#      Never starts the server. Launching (start.bat) never reaches here
+#      with -UpdateOnly, so launching never checks for updates and never
+#      blocks on a missing network.
+# ---------------------------------------------------------------------
+if ($UpdateOnly) {
+    $running = Get-Process -Name "llama-server" -ErrorAction SilentlyContinue
+    if ($running) {
+        Say ""
+        Say "  llama-server is still running. Close it first, then run update.bat again." Yellow
+        Read-Host "  Press Enter to exit"; exit 1
+    }
+
+    if (-not $exe) {
+        Say ""
+        Say "  No local runtime found. Installing the latest release..." Cyan
+        try { $exe = Install-PortableRuntime }
+        catch { Fail "Automatic llama.cpp installation failed.`n`n$($_.Exception.Message)" }
+        Say ""
+        Say "  Installed: $exe" Green
+        Read-Host "  Press Enter to exit"; exit 0
+    }
+
+    $localTag = Get-LocalReleaseTag $exe
+    if (-not $localTag) {
+        Say ""
+        Say "  Local version is unknown (no runtime-info.json). This may be a manual install." Yellow
+        $ans = Read-Host "  Replace it with the latest official build? (y/N)"
+        if ($ans -notmatch '^[Yy]$') { Say "  Update cancelled. Local runtime left unchanged." Yellow; exit 0 }
+        try { $exe = Install-PortableRuntime -IsUpdate }
+        catch { Fail "Update failed. Local runtime was left unchanged.`n`n$($_.Exception.Message)" }
+        Say ""
+        Say "  Updated: $exe" Green
+        Read-Host "  Press Enter to exit"; exit 0
+    }
+
+    Say ""
+    Say "  Local version : $localTag" White
+    try {
+        $latest = Get-LatestReleaseForBackend $backend
+    } catch {
+        Say ""
+        Say "  Cannot reach GitHub ($($_.Exception.Message)). Update skipped; local runtime is unchanged." Yellow
+        Read-Host "  Press Enter to exit"; exit 0
+    }
+    if (-not $latest) {
+        Say "  No official Windows x64 build for $backend was found. Update skipped; local runtime is unchanged." Yellow
+        Read-Host "  Press Enter to exit"; exit 0
+    }
+    Say "  Latest online : $($latest.Tag)" White
+
+    $localNum = Get-TagNumber $localTag
+    $latestNum = Get-TagNumber $latest.Tag
+    if ($localNum -and $latestNum) { $isLatest = ($latestNum -le $localNum) }
+    else { $isLatest = ($latest.Tag -eq $localTag) }
+
+    if ($isLatest) {
+        Say ""
+        Say "  Already up to date ($localTag). Nothing to download." Green
+        Read-Host "  Press Enter to exit"; exit 0
+    }
+
+    Say ""
+    Say "  Updating $localTag -> $($latest.Tag) ..." Cyan
+    try { $exe = Install-PortableRuntime -IsUpdate }
+    catch { Fail "Update failed. Local runtime was left unchanged.`n`n$($_.Exception.Message)" }
+    Say ""
+    Say "  Updated to $($latest.Tag): $exe" Green
+    if (New-PresetsFile) { Say "  presets.ini auto-generated (fixed ctx-size, measured for this GPU + model)" Green }
+    Read-Host "  Press Enter to exit"; exit 0
+}
+
 if (-not $exe) {
     try { $exe = Install-PortableRuntime }
     catch { Fail "Automatic llama.cpp installation failed.`n`n$($_.Exception.Message)" }
@@ -295,6 +650,10 @@ if (-not $exe) {
 if (-not $exe -or -not (Test-Path $exe)) {
     Fail "llama-server.exe was not found after installation."
 }
+
+# Create update.bat in the package root if it is missing, so an older
+# copy of this package gains the updater on its next launch.
+Ensure-UpdateLauncher
 
 Say ""
 Say "  llama.cpp    : $exe" Green
@@ -426,6 +785,117 @@ $ggufs | Select-Object -First 8 | ForEach-Object {
 if ($ggufs.Count -gt 8) { Say "    - ...and $($ggufs.Count - 8) more" DarkGray }
 
 # ---------------------------------------------------------------------
+# 6b. Auto-generate presets.ini (once, only when the file is missing)
+#      Rules:
+#      - Never overwrites an existing presets.ini. A hand-written file
+#        always wins; delete it yourself if you want a fresh one.
+#      - Model / mmproj paths come from scanning models\: one section
+#        per folder, section name = folder name, mmproj-*.gguf in the
+#        same folder is paired automatically.
+#      - ctx-size is a FIXED number, measured once by llama.cpp's own
+#        llama-fit-params tool (it reads the GGUF header and measures
+#        this GPU): the largest ctx that fits with all layers on GPU.
+#        The mmproj file size is added to the fit reserve, because
+#        auto-fit does not count mmproj VRAM (known llama.cpp issue:
+#        fit can look successful and still OOM while loading mmproj).
+#        Cache type matches the launcher (q8_0 K+V) so the measured
+#        number matches what the server will actually use.
+#      - If the tool is missing or fails, fall back to the VRAM-tier
+#        ctx already calculated above ($ctx). Still fixed, still safe.
+#      - Sampling comes from the model family's official table
+#        (Qwen3 non-thinking: temp 0.7, top-p 0.8, top-k 20, min-p 0,
+#        presence-penalty 1.5 for quantized models). Unknown families
+#        get no sampling lines, so the server defaults apply.
+#      - Pagefile is NOT used to size ctx. It only guards: if the
+#        model file alone is larger than RAM + pagefile, generation
+#        warns and still writes the file with the tier ctx.
+# ---------------------------------------------------------------------
+function Get-SamplingForModel($modelName) {
+    if ($modelName -match "Qwen3") {
+        return @{ temp = "0.7"; "top-p" = "0.8"; "top-k" = "20"; "min-p" = "0"; "presence-penalty" = "1.5" }
+    }
+    return $null
+}
+
+function Get-FittedCtx($modelPath, $mmprojPath) {
+    if (-not $exe -or -not (Test-Path $exe)) { return $null }
+    $fitExe = Join-Path (Split-Path $exe -Parent) "llama-fit-params.exe"
+    if (-not (Test-Path $fitExe)) { return $null }
+    $reserveMiB = 1024
+    if ($mmprojPath -and (Test-Path $mmprojPath)) {
+        $reserveMiB += [int][Math]::Ceiling((Get-Item $mmprojPath).Length / 1MB)
+    }
+    $out = $null
+    # PS 5.1: this script runs with $ErrorActionPreference = "Stop", and
+    # a native program writing log lines to stderr aborts the call under
+    # Stop (same trap as the --help probe in section 4). Run it under
+    # Continue so stderr is captured instead of throwing, then restore.
+    $prevEAP = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $out = (& $fitExe -m $modelPath --cache-type-k q8_0 --cache-type-v q8_0 --fit-target $reserveMiB 2>&1 | Out-String)
+    } catch { return $null } finally {
+        $ErrorActionPreference = $prevEAP
+    }
+    if (-not $out) { return $null }
+    if ($out -match "-c\s+(\d+)") {
+        $n = [int]$Matches[1]
+        if ($n -ge 4096) { return $n }
+    }
+    return $null
+}
+
+function New-PresetsFile {
+    $presetsPath = Join-Path $PSScriptRoot "presets.ini"
+    if (Test-Path $presetsPath) { return $false }
+    if (-not (Test-Path $MODELS_DIR)) { return $false }
+    $folders = Get-ChildItem $MODELS_DIR -Directory -ErrorAction SilentlyContinue | Where-Object {
+        @(Get-ChildItem $_.FullName -Filter "*.gguf" -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -notmatch "^mmproj" }).Count -gt 0
+    }
+    if (-not $folders -or $folders.Count -eq 0) { return $false }
+    $lines = @()
+    $lines += "; Auto-generated by llama-oneclick.ps1 on $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+    $lines += "; Hardware at generation time: $gpuName, VRAM $vramGB GB, RAM $ramGB GB, pagefile $pageGB GB, backend $backendLabel"
+    $lines += "; ctx-size per model is a FIXED number measured by llama-fit-params for this GPU + model."
+    $lines += "; This file is never overwritten by the launcher. Edit it freely, or delete it to regenerate."
+    $lines += ""
+    $lines += "version = 1"
+    $lines += ""
+    $lines += "[*]"
+    $lines += "ctx-size = 0"
+    foreach ($folder in $folders) {
+        $mainFiles = @(Get-ChildItem $folder.FullName -Filter "*.gguf" -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -notmatch "^mmproj" } | Sort-Object Length -Descending)
+        $main = $mainFiles[0]
+        $mmprojFile = @(Get-ChildItem $folder.FullName -Filter "mmproj*.gguf" -File -ErrorAction SilentlyContinue | Sort-Object Length -Descending | Select-Object -First 1)
+        $mmprojPath = $null
+        if ($mmprojFile) { $mmprojPath = $mmprojFile.FullName }
+        $modelRel = ("./models/{0}/{1}" -f $folder.Name, $main.Name)
+        $fitted = Get-FittedCtx $main.FullName $mmprojPath
+        $modelCtx = $ctx
+        if ($fitted) { $modelCtx = $fitted }
+        if ($main.Length -gt (($ramGB + $pageGB) * 1GB)) {
+            Say ("  Warning: {0} ({1:N1} GB) is larger than RAM + pagefile; it may not load." -f $main.Name, ($main.Length / 1GB)) Yellow
+        }
+        $lines += ""
+        $lines += ("[{0}]" -f $folder.Name)
+        $lines += ("model = {0}" -f $modelRel)
+        if ($mmprojFile) { $lines += ("mmproj = ./models/{0}/{1}" -f $folder.Name, $mmprojFile.Name) }
+        $lines += ("ctx-size = {0}" -f $modelCtx)
+        $sampling = Get-SamplingForModel $folder.Name
+        if ($sampling) {
+            $lines += ("temp = {0}" -f $sampling.temp)
+            $lines += ("top-p = {0}" -f $sampling["top-p"])
+            $lines += ("top-k = {0}" -f $sampling["top-k"])
+            $lines += ("min-p = {0}" -f $sampling["min-p"])
+            $lines += ("presence-penalty = {0}" -f $sampling["presence-penalty"])
+        }
+        Say ("  presets.ini: [{0}] ctx-size = {1}{2}" -f $folder.Name, $modelCtx, $(if ($fitted) { " (measured by llama-fit-params)" } else { " (VRAM-tier fallback)" })) Green
+    }
+    $lines | Set-Content -Path $presetsPath -Encoding ASCII
+    return $true
+}
+
+# ---------------------------------------------------------------------
 # 7. presets.ini (optional)
 #    Precedence in llama-server: CLI args > per-model section > [*] global section.
 #    Anything passed on the CLI therefore overrides presets.ini, so this launcher
@@ -433,6 +903,15 @@ if ($ggufs.Count -gt 8) { Say "    - ...and $($ggufs.Count - 8) more" DarkGray }
 #    Put those in presets.ini instead.
 # ---------------------------------------------------------------------
 $presets    = Join-Path $PSScriptRoot "presets.ini"
+# Generate once when missing (first install / after an update / after
+# the user deletes it). An existing file is never touched, and a normal
+# launch never rewrites it.
+if (-not (Test-Path $presets)) {
+    if (New-PresetsFile) {
+        Say ""
+        Say "  presets.ini auto-generated (fixed ctx-size, measured for this GPU + model)" Green
+    }
+}
 $usePresets = (Test-Path $presets) -and (Has "--models-preset")
 
 if ($usePresets) {
